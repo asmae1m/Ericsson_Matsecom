@@ -8,6 +8,7 @@ public interface SessionManager {
 	void addUser(UserData user);
 	void removeUser(int userIndex);
     void newSession(int userIndex, String serviceType, int time);
-    void saveData();
     List<InvoiceInformation> invoice();
+    void saveData();
+    
 }

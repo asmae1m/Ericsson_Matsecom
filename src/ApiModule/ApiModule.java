@@ -21,24 +21,45 @@ public class ApiModule implements SessionManager {
     }
 
     @Override
-    public void newSession(int userIndex, String serviceType, int time){
-        switch (this.config.getSessionType(serviceType)) {
-            case VOICE:
-                this.voiceSession(userIndex, time);
-                break;
-            case DATA:
-                this.dataSession(userIndex, serviceType, time);
-                break;
-        }
+    public List<UserData>getUserList() {
+        return this.users;
     }
 
-    private void voiceSession(int userIndex, int time) {
-        UserData user = this.users.get(userIndex);
-        int voiceMinutes = user.getVoiceMinutes();
-        user.setVoiceMinutes(voiceMinutes+time);
+    @Override
+    public void addUser(UserData newUser){
+        //check if user is duplicate
+        String imsi = newUser.getImsi();
+        for (UserData user :  this.users){
+            if (imsi.equals(user.getImsi())){
+                throw new UserAlreadyExistsException();
+            }
+        }
 
-        // store data?
-    }   
+        this.users.add(newUser);
+    }
+    
+    @Override
+    public void removeUser(int userIndex){
+        if (userIndex >= this.users.size()) {
+            throw new UserIndexOutOfBoundsException();
+        }
+        this.users.remove(userIndex);
+    }
+    
+    @Override
+    public void newSession(int userIndex, String serviceType, int time){
+        switch (this.config.getSessionType(serviceType)) {
+	        case DATA:
+	            this.dataSession(userIndex, serviceType, time);
+	            break;
+            case VOICE:
+            	UserData user = this.users.get(userIndex);
+                int voiceMinutes = user.getVoiceMinutes();
+                user.setVoiceMinutes(voiceMinutes+time);
+                break;
+        }
+        //TODO: maybe return some infor for display?
+    }
 
     private void dataSession(int userIndex, String serviceId, int time) {
         UserData user = this.users.get(userIndex);
@@ -83,12 +104,16 @@ public class ApiModule implements SessionManager {
     public List<InvoiceInformation> invoice() {
         List<InvoiceInformation> invoices = new ArrayList<>();
         for (UserData user : this.users) {
-            invoices.add(this.invoiceUser(user));
+            invoices.add(this.getInvoiceInfo(user));
+            
+            //reset user data
+            user.setVoiceMinutes(0);
+            user.setDataUsed(0);
         }
         return invoices;
     }
 
-    private InvoiceInformation invoiceUser(UserData user) {
+    private InvoiceInformation getInvoiceInfo(UserData user) {
     	String subscriptionType = user.getSubscriptionType();
     	
     	// get invoice data
@@ -98,10 +123,6 @@ public class ApiModule implements SessionManager {
     	int voiceCharge = this.getVoiceCharge(user);
         int basePrice = this.config.getBasePrice(subscriptionType);
         InvoiceInformation invoice = new InvoiceInformation(name, dataUsed, voiceMinutes, voiceCharge, basePrice);
-
-        // reset user data
-        user.setVoiceMinutes(0);
-        user.setDataUsed(0);
 
         return invoice;
     }
@@ -119,32 +140,6 @@ public class ApiModule implements SessionManager {
 		return pricePerMinute*voiceMinutes;	
     }
 
-    @Override
-    public List<UserData>getUserList() {
-        return this.users;
-    }
-
-    @Override
-    public void addUser(UserData newUser){
-        //check if user is duplicate
-        String imsi = newUser.getImsi();
-        for (UserData user :  this.users){
-            if (imsi.equals(user.getImsi())){
-                throw new UserAlreadyExistsException();
-            }
-        }
-
-        this.users.add(newUser);
-    }
-    
-    @Override
-    public void removeUser(int userIndex){
-        if (userIndex >= this.users.size()) {
-            throw new UserIndexOutOfBoundsException();
-        }
-        this.users.remove(userIndex);
-    }
-    
     @Override
     public void saveData() {
     	this.dataStore.saveUsers(this.users);
