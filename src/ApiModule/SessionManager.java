@@ -1,10 +1,13 @@
 package ApiModule;
 
 import DataStore.UserData;
+import java.util.List;
 
 public interface SessionManager {
-    void newSession(int id, int service, int time);
-    InvoiceInformation[] invoice();
-    UserData[] getUserList();
-    double calculateBandwidth(int service, double signalStrength);
+	List<UserData> getUserList();
+	void addUser(UserData user);
+	void removeUser(int userIndex);
+    void newSession(int userIndex, String serviceType, int time);
+    List<InvoiceInformation> invoice();
+    
 }
