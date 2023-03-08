@@ -3,6 +3,7 @@ package ApiModule;
 import DataStore.UserData;
 import DataStore.DataStore;
 import Configuration.Configuration;
+import Configuration.SessionType;
 
 import java.lang.Math;
 import java.lang.RuntimeException;
@@ -19,16 +20,16 @@ public class ApiModule implements SessionManager {
     public ApiModule(Configuration config, DataStore dataStore){
         this.config = config;
         this.dataStore = dataStore;
-        this.users = dataStore.loadUserData();
+        this.users = dataStore.loadUsers();
     }
 
     @Override
     public void newSession(int userIndex, String serviceType, int time){
         switch (this.config.getSessionType(serviceType)) {
-            case "voice":
+            case VOICE:
                 this.voiceSession(userIndex, time);
                 break;
-            case "data":
+            case DATA:
                 this.dataSession(userIndex, serviceType, time);
                 break;
         }
@@ -36,43 +37,35 @@ public class ApiModule implements SessionManager {
 
     private void voiceSession(int userIndex, int time) {
         UserData user = this.users.get(userIndex);
-
-        int freeMinutes = user.getFreeMinutes();
-        int charge = 0;
-        if (time>freeMinutes){
-            int chargedMinutes = time-freeMinutes;
-            String subscriptionType = user.getSubscriptionType();
-            charge = chargedMinutes * this.config.getPricePerMinute(subscriptionType);
-            freeMinutes = 0;
-        } else { //enough free minutes
-            freeMinutes -= time;
-        }
-        user.setFreeMinutes(freeMinutes);
-        user.setVoiceCharge(user.getVoiceCharge() + charge);
+        int voiceMinutes = user.getVoiceMinutes();
+        user.setVoiceMinutes(voiceMinutes+time);
 
         // store data?
     }   
 
-    private void dataSession(String userIndex, String serviceId, int time) {
+    private void dataSession(int userIndex, String serviceId, int time) {
         UserData user = this.users.get(userIndex);
-        
         String subscriptionType = user.getSubscriptionType();
-        double subscriptionRate = this.config.getSubscriptionDataRate(subscriptionType);
-        double signalStrength = this.getSignalStrength();
-        double availableRate = subscriptionRate*signalStrength;
-
+        int dataVolume = this.config.getSubscriptionDataVolume(subscriptionType);
+        
+        double availableRate = this.getAvailableDataRate(user);
         double requiredRate = this.config.getRequiredDataRate(serviceId);
-
         double dataRate = Math.min(requiredRate, availableRate);
-
-        double dataVolume = dataRate * time;
-        double remainingData = user.getRemainingData();
-
-        if (dataVolume >= remainingData) {
+        double newData = 7.5 * dataRate * time + user.getDataUsed();
+        
+        if (newData >= dataVolume) {
         	throw new NotEnoughDataVolumeException();
         } else {
-        	user.setRemainingData(remainingData-dataVolume);
+        	user.setDataUsed(newData);
         }
+    }
+    
+    private double getAvailableDataRate(UserData user) {
+        String terminalType = user.getTerminalType();
+        String ran = this.config.getRan(terminalType);
+        double subscriptionRate = this.config.getMaxDataRate(ran);
+        double signalStrength = this.getSignalStrength();
+        return subscriptionRate*signalStrength;
     }
 
     private double getSignalStrength(){
@@ -84,7 +77,7 @@ public class ApiModule implements SessionManager {
                 return 0.1;
             case 2: // middle
                 return 0.25;
-            case 3: // good
+            default: // good
                 return 0.5;
         }
     }
@@ -92,7 +85,6 @@ public class ApiModule implements SessionManager {
     @Override
     public List<InvoiceInformation> invoice() {
         List<InvoiceInformation> invoices = new ArrayList<>();
-
         for (UserData user : this.users) {
             invoices.add(this.invoiceUser(user));
         }
@@ -100,20 +92,36 @@ public class ApiModule implements SessionManager {
     }
 
     private InvoiceInformation invoiceUser(UserData user) {
-
-        // get invoice data
-        String subscriptionType = user.getSubscriptionType();
-        int basePrice = this.config.getBasePrice(user.getSubscriptionType());
-        InvoiceInformation invoice = new InvoiceInformation(user, basePrice);
+    	String subscriptionType = user.getSubscriptionType();
+    	
+    	// get invoice data
+    	String name = user.getName(); // TODO: ask which name is displayed!
+    	double dataUsed = user.getDataUsed();
+    	int voiceMinutes = user.getVoiceMinutes();
+    	int voiceCharge = this.getVoiceCharge(user);
+        int basePrice = this.config.getBasePrice(subscriptionType);
+        InvoiceInformation invoice = new InvoiceInformation(name, dataUsed, voiceMinutes, voiceCharge, basePrice);
 
         // reset user data
         int freeMinutes = this.config.getSubscriptionFreeMinutes(subscriptionType);
         int dataVolume = this.config.getSubscriptionDataVolume(subscriptionType);
-        user.setFreeMinutes(freeMinutes);
-        user.setRemainingData(dataVolume);
-        user.setVoiceCharge(0);
+        user.setVoiceMinutes(0);
+        user.setDataUsed(0);
 
         return invoice;
+    }
+    
+    private int getVoiceCharge(UserData user) {
+    	String subscriptionType = user.getSubscriptionType();
+    	int freeVoiceMinutes = config.getFreeVoiceMinutes(subscriptionType);
+    	int voiceMinutes = user.getVoiceMinutes() - freeVoiceMinutes;
+    	
+    	if (voiceMinutes<=0) {
+    		return 0;
+    	}
+	
+		int pricePerMinute = config.getPricePerMinute(subscriptionType);
+		return pricePerMinute*voiceMinutes;	
     }
 
     @Override
