@@ -1,9 +1,0 @@
-/**
- * 
- */
-/**
- * @author Moutchou
- *
- */
-module alaraa {
-}
