@@ -111,7 +111,7 @@ public class ApiModule implements SessionManager {
     
     private int getVoiceCharge(UserData user) {
     	String subscriptionType = user.getSubscriptionType();
-    	int freeVoiceMinutes = config.getFreeVoiceMinutes(subscriptionType);
+    	int freeVoiceMinutes = config.getSubscriptionFreeMinutes(subscriptionType);
     	int voiceMinutes = user.getVoiceMinutes() - freeVoiceMinutes;
     	
     	if (voiceMinutes<=0) {
