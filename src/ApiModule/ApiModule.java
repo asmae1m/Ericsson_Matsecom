@@ -9,7 +9,7 @@ import java.lang.RuntimeException;
 import java.util.Random;
 import java.util.List;
 
-class ApiModule implements SessionManager {
+public class ApiModule implements SessionManager {
 
     private Configuration config;
     private DataStore dataStore;
@@ -21,7 +21,8 @@ class ApiModule implements SessionManager {
         this.users = dataStore.loadUserData();
     }
 
-    public void newSession(int userIndex, String serviceId, int time){
+    @Override
+    public void newSession(int userIndex, String serviceType, int time){
         // TODO: check input!!!
         
         switch (this.config.getSessionType(service)) {
@@ -63,7 +64,7 @@ class ApiModule implements SessionManager {
 
         double requiredRate = this.config.getRequiredDataRate(serviceId);
 
-        double dataRate = min(requiredRate, availableRate);
+        double dataRate = Math.min(requiredRate, availableRate);
 
         double dataCost = dataRate * time;
         double dataVolume = user.getDataVolume();
@@ -89,6 +90,7 @@ class ApiModule implements SessionManager {
         }
     }
 
+    @Override
     public List<InvoiceInformation> invoice() {
         List<InvoiceInformation> invoices = new List<InvoiceInformation>();
 
@@ -115,21 +117,32 @@ class ApiModule implements SessionManager {
         return invoice;
     }
 
+    @Override
     public List<UserData>getUserList() {
         return this.users;
     }
 
+    @Override
     public void addUser(UserData newUser){
         //check if user is duplicate
         String imsi = newUser.getImsi();
         for (UserData user :  this.users){
             if (imsi.equals(user.getImsi())){
-                throw new UserAlreadyExistsException("A User with that IMSI already exists!");
+                throw new UserAlreadyExistsException();
             }
         }
 
         this.users.add(user);
     }
+
+    @Override
+    public void removeUser(int userIndex){
+        if (userIndex >= this.users.length()) {
+            throw new UserIndexOutOfBoundsException();
+        }
+        this.users.remove(userIndex);
+    }
+
 }
 
 class NotEnoughDataVolumeException extends RuntimeException {
@@ -137,7 +150,9 @@ class NotEnoughDataVolumeException extends RuntimeException {
 }
 
 class UserAlreadyExistsException extends RuntimeException {
-    super("Not enough Data Volume!");
+    super("A User with this IMSI already exists!");
 }
 
-
+class UserIndexOutOfBoundsException extends RuntimeException {
+    super("User index is out of bounds!");
+}
