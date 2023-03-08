@@ -8,6 +8,7 @@ import java.lang.Math;
 import java.lang.RuntimeException;
 import java.util.Random;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ApiModule implements SessionManager {
 
@@ -23,14 +24,12 @@ public class ApiModule implements SessionManager {
 
     @Override
     public void newSession(int userIndex, String serviceType, int time){
-        // TODO: check input!!!
-        
-        switch (this.config.getSessionType(service)) {
-            case config.SessionType.VOICE_SESSION:
+        switch (this.config.getSessionType(serviceType)) {
+            case "voice":
                 this.voiceSession(userIndex, time);
                 break;
-            case config.SessionType.DATA_SESSION:
-                this.dataSession(userIndex, serviceId, time);
+            case "data":
+                this.dataSession(userIndex, serviceType, time);
                 break;
         }
     }
@@ -66,13 +65,13 @@ public class ApiModule implements SessionManager {
 
         double dataRate = Math.min(requiredRate, availableRate);
 
-        double dataCost = dataRate * time;
-        double dataVolume = user.getDataVolume();
+        double dataVolume = dataRate * time;
+        double remainingData = user.getRemainingData();
 
-        if (dataCost < dataVolume) {
-            user.setRemainingData(dataVolume-dataCost);
+        if (dataVolume >= remainingData) {
+        	throw new NotEnoughDataVolumeException();
         } else {
-            throw new NotEnoughDataVolumeException();
+        	user.setRemainingData(remainingData-dataVolume);
         }
     }
 
@@ -92,7 +91,7 @@ public class ApiModule implements SessionManager {
 
     @Override
     public List<InvoiceInformation> invoice() {
-        List<InvoiceInformation> invoices = new List<InvoiceInformation>();
+        List<InvoiceInformation> invoices = new ArrayList<>();
 
         for (UserData user : this.users) {
             invoices.add(this.invoiceUser(user));
@@ -132,27 +131,15 @@ public class ApiModule implements SessionManager {
             }
         }
 
-        this.users.add(user);
+        this.users.add(newUser);
     }
-
+    
     @Override
     public void removeUser(int userIndex){
-        if (userIndex >= this.users.length()) {
+        if (userIndex >= this.users.size()) {
             throw new UserIndexOutOfBoundsException();
         }
         this.users.remove(userIndex);
     }
-
 }
 
-class NotEnoughDataVolumeException extends RuntimeException {
-    super("Not enough Data Volume!");
-}
-
-class UserAlreadyExistsException extends RuntimeException {
-    super("A User with this IMSI already exists!");
-}
-
-class UserIndexOutOfBoundsException extends RuntimeException {
-    super("User index is out of bounds!");
-}
