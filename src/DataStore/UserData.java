@@ -4,62 +4,39 @@ public class UserData {
 	private String forename;
 	private String surname;
 	private String imsi;
-	private double remainingData;
+	private double dataUsed;
 	private int voiceMinutes;
-	private int voiceCharge;
-	private TerminalType terminalType;
-	private SubscriptionType subscriptionType;
+	private String terminalType;
+	private String subscriptionType;
 
-	public UserData(String forename, String surname, String imsi, TerminalType terminalType,
-			SubscriptionType subscriptionType) {
+	public UserData(String forename, String surname, String imsi, String terminalType,
+			String subscriptionType) {
 		this.forename = forename;
 		this.surname = surname;
 		this.imsi = imsi;
 		this.terminalType = terminalType;
 		this.subscriptionType = subscriptionType;
+		this.dataUsed = 0.0;
+		this.voiceMinutes = 0;
 	}
 
 	// Setter methods
 
-	public void setRemainingData(double remainingData) {
-		this.remainingData = remainingData;
+	public void setDataUsed(double dataUsed) {
+		this.dataUsed = dataUsed;
 	}
 
 	public void setVoiceMinutes(int voiceMinutes) {
 		this.voiceMinutes = voiceMinutes;
 	}
 
-	public void setVoiceCharge(int voiceCharge) {
-		this.voiceCharge = voiceCharge;
-	}
-
-	public void setImsi(String imsi) {
-		this.imsi = imsi;
-	}
-
-	public void setForename(String forename) {
-		this.forename = forename;
-	}
-
-	public void setTerminalType(TerminalType terminalType) {
-		this.terminalType = terminalType;
-	}
-
-	public void setSubscriptionType(SubscriptionType subscriptionType) {
-		this.subscriptionType = subscriptionType;
-	}
-
 	// Getter methods
-	public double getRemainingData() {
-		return remainingData;
+	public double getDataUsed() {
+		return dataUsed;
 	}
 
 	public int getVoiceMinutes() {
 		return voiceMinutes;
-	}
-
-	public int getVoiceCharge() {
-		return voiceCharge;
 	}
 
 	public String getForename() {
@@ -70,10 +47,6 @@ public class UserData {
 		return surname;
 	}
 
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-
 	public String getName() {
 		return this.forename + this.surname;
 	}
@@ -82,11 +55,11 @@ public class UserData {
 		return imsi;
 	}
 
-	public TerminalType getTerminalType() {
+	public String getTerminalType() {
 		return terminalType;
 	}
 
-	public SubscriptionType getSubscriptionType() {
+	public String getSubscriptionType() {
 		return subscriptionType;
 	}
 

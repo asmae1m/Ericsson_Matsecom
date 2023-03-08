@@ -103,8 +103,6 @@ public class ApiModule implements SessionManager {
         InvoiceInformation invoice = new InvoiceInformation(name, dataUsed, voiceMinutes, voiceCharge, basePrice);
 
         // reset user data
-        int freeMinutes = this.config.getSubscriptionFreeMinutes(subscriptionType);
-        int dataVolume = this.config.getSubscriptionDataVolume(subscriptionType);
         user.setVoiceMinutes(0);
         user.setDataUsed(0);
 
