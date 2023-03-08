@@ -141,5 +141,10 @@ public class ApiModule implements SessionManager {
         }
         this.users.remove(userIndex);
     }
+    
+    @Override
+    public void saveData() {
+    	this.dataStore.saveUsers(this.users);
+    }
 }
 
