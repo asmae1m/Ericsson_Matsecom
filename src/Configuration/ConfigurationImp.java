@@ -1,5 +1,12 @@
 package Configuration;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+
 public class ConfigurationImp implements Configuration {
 
 	@Override
@@ -102,6 +109,45 @@ public class ConfigurationImp implements Configuration {
 		}else 
 			return 0;
 		
+	}
+
+	@Override
+	public String getProperty(String key) {
+		// TODO Auto-generated method stub
+		File configFile = new File("config.properties");
+		 String host = null;
+		try {
+		    FileReader reader = new FileReader(configFile);
+		    Properties props = new Properties();
+		    props.load(reader);
+		 
+		    host = props.getProperty(key);
+		 
+		    reader.close();
+		} catch (FileNotFoundException ex) {
+		    // file does not exist
+		} catch (IOException ex) {
+		    // I/O error
+		}
+		return host;
+	}
+
+	@Override
+	public void saveProperty(String key, String value, String cmt) {
+		// TODO Auto-generated method stub
+		File configFile = new File("config.properties");
+		 
+		try {
+		    Properties props = new Properties();
+		    props.setProperty(key, value);
+		    FileWriter writer = new FileWriter(configFile);
+		    props.store(writer, cmt);
+		    writer.close();
+		} catch (FileNotFoundException ex) {
+		    // file does not exist
+		} catch (IOException ex) {
+		    // I/O error
+		}
 	}
 
 }
