@@ -1,8 +1,10 @@
 package ApiModule;
 
 import Configuration.Configuration;
+import Configuration.ConfigurationImp;
 import DataStore.DataStore;
 import DataStore.UserData;
+import DataStore.JsonDataStore;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.Math;
@@ -18,6 +20,18 @@ public class ApiModule implements SessionManager {
         this.config = config;
         this.dataStore = dataStore;
         this.users = dataStore.loadUsers();
+    }
+    
+    public ApiModule() {
+    	this(new ConfigurationImp(), new JsonDataStore());
+    }
+    
+    public ApiModule(Configuration config){
+    	this(config, new JsonDataStore());
+    }
+    
+    public ApiModule(DataStore dataStore){
+    	this(new ConfigurationImp(), dataStore);
     }
 
     @Override
