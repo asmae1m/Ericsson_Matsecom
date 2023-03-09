@@ -40,7 +40,7 @@ public class ApiModule implements SessionManager {
     }
 
     @Override
-    public void addUser(UserData newUser){
+    public void addUser(UserData newUser) throws UserAlreadyExistsException {
         //check if user is duplicate
         String imsi = newUser.getImsi();
         for (UserData user :  this.users){
@@ -53,15 +53,21 @@ public class ApiModule implements SessionManager {
     }
     
     @Override
-    public void removeUser(int userIndex){
-        if (userIndex >= this.users.size()) {
-            throw new UserIndexOutOfBoundsException();
-        }
-        this.users.remove(userIndex);
+    public void removeUser(int userIndex) throws UserIndexOutOfBoundsException {
+    	if (!this.isValidUserIndex(userIndex)) {
+    		throw new UserIndexOutOfBoundsException();
+    	}
+
+    	this.users.remove(userIndex);
     }
     
     @Override
-    public void newSession(int userIndex, String serviceType, int time){
+    public void newSession(int userIndex, String serviceType, int time) throws UserIndexOutOfBoundsException, NotEnoughDataVolumeException {
+    	
+    	if (!this.isValidUserIndex(userIndex)) {
+    		throw new UserIndexOutOfBoundsException();
+    	}
+    	
         switch (this.config.getSessionType(serviceType)) {
 	        case DATA:
 	            this.dataSession(userIndex, serviceType, time);
