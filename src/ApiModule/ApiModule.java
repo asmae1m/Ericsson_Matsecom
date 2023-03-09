@@ -282,7 +282,7 @@ public class ApiModule implements SessionManager {
         String subscriptionType = user.getSubscriptionType();
         
         int baseDataVolume = this.config.getSubscriptionDataVolume(subscriptionType);
-        int upgradeDataVolume = 1000 * user.getDataUpgrades();
+        int upgradeDataVolume = 1000 * user.getDataVolumeUpgrades();
         int dataVolume = baseDataVolume + upgradeDataVolume;
         
         double availableRate = this.getAvailableDataRate(user);
