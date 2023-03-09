@@ -1,6 +1,23 @@
 package DataStore;
 
+/**
+ * The UserData class contains data for a single user, including their name,
+ * International Mobile Subscriber Identity (IMSI), data usage, voice minutes,
+ * terminal type, subscription type, and number of data volume upgrades.
+ * 
+ * @author ALARA
+ * 
+ * @since 1.0
+ *
+ */
+
 public class UserData {
+
+	/*
+	 * Attributes
+	 * 
+	 */
+
 	private String forename;
 	private String surname;
 	private String imsi;
@@ -8,11 +25,33 @@ public class UserData {
 	private int voiceMinutes;
 	private String terminalType;
 	private String subscriptionType;
+	private int dataVolumeUpgrades;
+
+	/*
+	 * Constructors
+	 * 
+	 */
+
+	/**
+	 * Creates an instance of UserData with default values. Used by the
+	 * Objectmapper.
+	 */
 
 	public UserData() {
 		super();
 	}
-	
+
+	/**
+	 * Creates an instance of UserData with the specified values.
+	 * 
+	 * @param forename         the user's first name
+	 * @param surname          the user's last name
+	 * @param imsi             the user's International Mobile Subscriber Identity
+	 *                         (IMSI)
+	 * @param terminalType     the type of terminal used by the user
+	 * @param subscriptionType the user's subscription type
+	 */
+
 	public UserData(String forename, String surname, String imsi, String terminalType, String subscriptionType) {
 		this.forename = forename;
 		this.surname = surname;
@@ -21,6 +60,7 @@ public class UserData {
 		this.subscriptionType = subscriptionType;
 		this.dataUsed = 0.0;
 		this.voiceMinutes = 0;
+		this.dataVolumeUpgrades = 0;
 	}
 
 	// Setter methods
@@ -32,33 +72,57 @@ public class UserData {
 		this.voiceMinutes = voiceMinutes;
 	}
 
+	public void setForename(String forename) {
+		this.forename = forename;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	public void setTerminalType(String terminalType) {
+		this.terminalType = terminalType;
+	}
+
+	public void setSubscriptionType(String subscriptionType) {
+		this.subscriptionType = subscriptionType;
+	}
+
+	public void setDataVolumeUpgrades(int dataVolumeUpgrades) {
+		this.dataVolumeUpgrades = dataVolumeUpgrades;
+	}
+
 	// Getter methods
 	public double getDataUsed() {
-		return dataUsed;
+		return this.dataUsed;
 	}
 
 	public int getVoiceMinutes() {
-		return voiceMinutes;
+		return this.voiceMinutes;
 	}
 
 	public String getForename() {
-		return forename;
+		return this.forename;
 	}
 
 	public String getSurname() {
-		return surname;
+		return this.surname;
 	}
 
 	public String getImsi() {
-		return imsi;
+		return this.imsi;
 	}
 
 	public String getTerminalType() {
-		return terminalType;
+		return this.terminalType;
 	}
 
 	public String getSubscriptionType() {
-		return subscriptionType;
+		return this.subscriptionType;
+	}
+
+	public int getDataVolumeUpgrades() {
+		return this.dataVolumeUpgrades;
 	}
 
 }

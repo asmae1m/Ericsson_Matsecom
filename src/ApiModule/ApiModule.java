@@ -219,7 +219,8 @@ public class ApiModule implements SessionManager {
             
             //reset user data
             user.setVoiceMinutes(0);
-            user.setDataUsed(0);
+            user.setDataUsed(0.0);
+            user.setDataVolumeUpgrades(0);
         }
         return invoices;
     }
@@ -236,6 +237,27 @@ public class ApiModule implements SessionManager {
     @Override
     public void saveData() {
     	this.dataStore.saveUsers(this.users);
+    }
+    
+    /**
+     * adds a data volume upgrade to the subscribers account
+     * 
+     * @param userIndex: index of subscriber who gets the data volume upgrade
+     * 
+     * @throws UserIndexOutOfBoundsException when called with an invalid user index
+     * 
+     * @since 1.1
+     */
+    @Override
+    public void upgradeDataVolume(int userIndex) throws UserIndexOutOfBoundsException {
+    	
+    	if (!this.isValidUserIndex(userIndex)) {
+    		throw new UserIndexOutOfBoundsException();
+    	}
+    	
+    	UserData user = users.get(userIndex);
+    	int dataVolumeUpgrades = user.getDataVolumeUpgrades();
+    	user.setDataVolumeUpgrades(dataVolumeUpgrades + 1);
     }
     
     /*
@@ -258,7 +280,10 @@ public class ApiModule implements SessionManager {
     private void dataSession(int userIndex, String serviceId, int time) throws NotEnoughDataVolumeException {
         UserData user = this.users.get(userIndex);
         String subscriptionType = user.getSubscriptionType();
-        int dataVolume = this.config.getSubscriptionDataVolume(subscriptionType);
+        
+        int baseDataVolume = this.config.getSubscriptionDataVolume(subscriptionType);
+        int upgradeDataVolume = 1000 * user.getDataVolumeUpgrades();
+        int dataVolume = baseDataVolume + upgradeDataVolume;
         
         double availableRate = this.getAvailableDataRate(user);
         double requiredRate = this.config.getRequiredDataRate(serviceId);
@@ -339,11 +364,14 @@ public class ApiModule implements SessionManager {
     	// get invoice data
     	String forename = user.getForename();
     	String surename = user.getSurname();
-    	double dataUsed = user.getDataUsed();
+    	int basePrice = this.config.getBasePrice(subscriptionType);
     	int voiceMinutes = user.getVoiceMinutes();
     	int voiceCharge = this.getVoiceCharge(user);
-        int basePrice = this.config.getBasePrice(subscriptionType);
-        InvoiceInformation invoice = new InvoiceInformation(forename, surename, dataUsed, voiceMinutes, voiceCharge, basePrice);
+    	double dataUsed = user.getDataUsed();
+        int dataVolumeUpgrades = user.getDataVolumeUpgrades();
+        int dataCharge = 10*100*dataVolumeUpgrades;
+        int totalCharge = basePrice + voiceCharge + dataCharge;
+        InvoiceInformation invoice = new InvoiceInformation(forename, surename, basePrice, voiceMinutes, voiceCharge, dataUsed, dataVolumeUpgrades, dataCharge, totalCharge);
 
         return invoice;
     }
