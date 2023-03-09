@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>libs</name>
+			<type>2</type>
+			<location>/Users/ldo/git/alaraa/lib</location>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+<<<<<<< HEAD
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+=======
+	<classpathentry kind="src" path="libs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-17">
+>>>>>>> 2ad06e03af34ebbec5f75a5524b4b47a35238383
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/Moutchou/OneDrive - Fachhochschule Aachen/Documents/GitHub/alaraa/bin/lib/jackson-annotations-2.14.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Moutchou/OneDrive - Fachhochschule Aachen/Documents/GitHub/alaraa/bin/lib/jackson-core-2.14.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Moutchou/OneDrive - Fachhochschule Aachen/Documents/GitHub/alaraa/bin/lib/jackson-databind-2.14.2.jar"/>
+=======
+	<classpathentry kind="lib" path="libs/jackson-annotations-2.14.2.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-core-2.14.2.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-databind-2.14.2.jar"/>
+>>>>>>> 2ad06e03af34ebbec5f75a5524b4b47a35238383
 	<classpathentry kind="output" path="bin"/>
 </classpath>
