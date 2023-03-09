@@ -13,11 +13,13 @@ public class SessionSimulator {
 	
 	private Configuration config;
 	private SessionManager api;
+	private Scanner scanner;
 	
 	public SessionSimulator() throws IOException {
 		 config = new ConfigurationImp();
 		 JsonDataStore dataStore = new JsonDataStore();
 		 api = new ApiModule(config, dataStore);
+		 scanner = new Scanner(System.in);
 	}
 	
 	public void mainLoop() {
@@ -33,30 +35,28 @@ public class SessionSimulator {
 	        System.out.println("6. invoice");
 	        System.out.println("7. exit");
 	        
-	        Scanner scanner = new Scanner(System.in);
-	        int option = scanner.nextInt(); //TODO: sanazize input
-	        scanner.close();
+	        String input = scanner.nextLine();
 
-	        switch(option) {
-	            case 1:
+	        switch(input) {
+	            case "1":
 	                showUserList(false);
 	                break;
-	            case 2:
+	            case "2":
 	                editUser();
 	                break;
-	            case 3:
+	            case "3":
 	                addUser();
 	                break;
-	            case 4:
+	            case "4":
 	                removeUser();
 	                break;
-	            case 5:
+	            case "5":
 	                newSession();
 	                break;
-	            case 6:
+	            case "6":
 	            	invoice();
 	                break;
-	            case 7:
+	            case "7":
 	            	api.saveData();
 	            	exit=true;
 	                break;
@@ -65,12 +65,9 @@ public class SessionSimulator {
 	                break;
 	        }
 
-	        scanner.close();
-			
-			
 		}
 		
-		
+		scanner.close();
 		
 	}
 	
@@ -95,20 +92,17 @@ public class SessionSimulator {
         	if (showIndex) {
         		System.out.println(Integer.toString(i) + ": " + getUserDisplay(users.get(i)));
         	} else {
-        		System.out.println(users.get(i));
+        		System.out.println(getUserDisplay(users.get(i)));
         	}
             
         }
-        
 	}
 	
 	private int selectUser() {
 		while(true) {
 			showUserList(true);
 			try {
-				Scanner scanner = new Scanner(System.in);
 		        int option = scanner.nextInt();
-		        scanner.close();
 		        api.getUserList().get(option);
 		        return option;
 			} catch(RuntimeException e) {
@@ -120,10 +114,12 @@ public class SessionSimulator {
 	private String selectTypeFromList(List<String> list, String prompt, String defaultValue) {
 		while(true) {
 			System.out.println(prompt);
-			Scanner scanner = new Scanner(System.in);
-	        String input = scanner.next();
-	        scanner.close();
-	        if (defaultValue != null && input=="") {
+			for (int i=0; i<list.size(); i++) {
+				System.out.println(Integer.toString(i)+": "+list.get(i));
+			}
+			
+	        String input = scanner.nextLine();
+	        if (defaultValue != null && "".equals(input)) {
 	        	return defaultValue;
 	        }
 			try {
@@ -139,23 +135,20 @@ public class SessionSimulator {
     	int userIndex = selectUser();
     	UserData user = api.getUserList().get(userIndex);
     	
-    	Scanner scanner = new Scanner(System.in);
         System.out.println("Enter new forename (leave empty to keep current value):");
-        String forename = scanner.next();
+        String forename = scanner.nextLine();
         if (forename.equals("")) {
         	forename = user.getForename();
         }
         System.out.println("Enter new surname (leave empty to keep current value):");
-        String surname = scanner.next();
+        String surname = scanner.nextLine();
         if (surname.equals("")) {
         	surname = user.getSurname();
         }
-        scanner.close();
         
         String subscriptionType = selectTypeFromList(config.getPossibleSubscriptionTypes(), "Select new subscription:", user.getSubscriptionType());
         String terminalType = selectTypeFromList(config.getPossibleTerminalTypes(), "Select new terminal:", user.getTerminalType());
-        
-        
+
         InvoiceInformation invoice = api.updateUserData(userIndex, forename, surname, subscriptionType, terminalType);
         System.out.println("User edited successfully:");
         System.out.println(getUserDisplay(user));
@@ -165,18 +158,15 @@ public class SessionSimulator {
     
     private void addUser() {
         System.out.println("Enter user information:");
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Forname: ");
         String forname = scanner.nextLine();
         System.out.print("Surname: ");
         String surname = scanner.nextLine();
         System.out.print("IMSI: ");
         String imsi = scanner.nextLine();
-        System.out.print("Subscription Type: ");
-        String subscriptionType = scanner.nextLine();
-        System.out.print("Terminal Type: ");
-        String terminalType = scanner.nextLine();
-        scanner.close();
+        
+        String subscriptionType = selectTypeFromList(config.getPossibleSubscriptionTypes(), "Select new subscription:", null);
+        String terminalType = selectTypeFromList(config.getPossibleTerminalTypes(), "Select new terminal:", null);
 
         UserData newUser = new UserData(forname,surname, imsi, subscriptionType, terminalType);
         try {
@@ -188,10 +178,7 @@ public class SessionSimulator {
     }
 
     private void removeUser() {
-        System.out.println("Enter user index:");
-        Scanner scanner = new Scanner(System.in);
-        int userIndex = scanner.nextInt();
-        scanner.close();
+        int userIndex = selectUser();
 
         try {
             api.removeUser(userIndex);
@@ -204,11 +191,9 @@ public class SessionSimulator {
     private void newSession() {
     	int userIndex = selectUser();
         System.out.println("Enter session information:");
-        Scanner scanner = new Scanner(System.in);
         String serviceType = selectTypeFromList(config.getPossibleServices(), "Select service:", null);
         System.out.print("Time: ");
         int time = scanner.nextInt();
-        scanner.close();
 
         try {
             api.newSession(userIndex, serviceType, time);
