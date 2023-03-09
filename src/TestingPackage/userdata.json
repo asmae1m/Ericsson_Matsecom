@@ -1,0 +1,11 @@
+[
+	{
+		"forename":"testForename",
+		"surname":"testSurname",
+		"imsi":"123456789012345",
+		"dataUsed":0.0,
+		"voiceMinutes":0,
+		"terminalType":"testTerminalType",
+		"subscriptionType":"testSubscriptionType"
+	}
+]
