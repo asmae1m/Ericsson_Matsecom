@@ -9,6 +9,10 @@ public class UserData {
 	private String terminalType;
 	private String subscriptionType;
 
+	public UserData() {
+		super();
+	}
+	
 	public UserData(String forename, String surname, String imsi, String terminalType, String subscriptionType) {
 		this.forename = forename;
 		this.surname = surname;
@@ -20,7 +24,6 @@ public class UserData {
 	}
 
 	// Setter methods
-
 	public void setDataUsed(double dataUsed) {
 		this.dataUsed = dataUsed;
 	}
@@ -44,10 +47,6 @@ public class UserData {
 
 	public String getSurname() {
 		return surname;
-	}
-
-	public String getName() {
-		return this.forename + this.surname;
 	}
 
 	public String getImsi() {
