@@ -9,8 +9,9 @@ public class test {
 		ConfigurationImp con = new ConfigurationImp();
 		
 		//con.saveProperty("Adaptive HD video", SessionType.DATA.toString(), null);
-		System.out.println(con.getRequiredDataRate("Adaptive HD video"));
+		//System.out.println(con.getRequiredDataRate("Adaptive HD video"));
 		//con.init();
+		System.out.println(con.getPossibleServices().get(0));
 	}
 
 }

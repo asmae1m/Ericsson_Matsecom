@@ -10,8 +10,19 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * the configuration class help us to get list of terminals , ran
+ * services ,sessionType and some price ...
+ * 
+ * @author ALARA
+ * 
+ * @since 1.0
+ * */
+
 public class ConfigurationImp implements Configuration {
-	
+	/**
+	 * Attributes
+	 * */
 	private Properties sessionType;
 	private Properties requiredDataRate;
 	private Properties pricePerMinute;
@@ -21,6 +32,16 @@ public class ConfigurationImp implements Configuration {
 	private Properties ran;
 	private Properties maxDataRate;
 	
+	/**
+	 * Main Constructor
+	 * 
+	 * used by ApiModule constructor so he can load all the properties 
+	 * that help us to get all the configuration data or write it 
+	 * when its empty
+	 * @author ALARA
+	 * 
+	 * @since 1.0
+	 * */
 	public ConfigurationImp() {
 		try {
 			loadConfig();
@@ -34,6 +55,13 @@ public class ConfigurationImp implements Configuration {
 		}
 	}
 
+	/**
+	 * return an enum value  if service is voice or data according to the value of serviceType
+	 * 
+	 * 
+	 * @since 1.0
+	 * */
+	
 	@Override
 	public SessionType getSessionType(String serviceType) {
 		String value = sessionType.getProperty(serviceType);
@@ -43,17 +71,35 @@ public class ConfigurationImp implements Configuration {
 			return SessionType.DATA;
 		}
 	}
-
+	 
+	/**
+	 * return data rate for service type
+	 * @param serviceType :either "Voice call" , "Browsing and social networking","App download" or "Adaptive HD video"
+	 * 
+	 * @since 1.0
+	 * */
 	@Override
 	public double getRequiredDataRate(String serviceType) {
 		return Double.parseDouble(requiredDataRate.getProperty(serviceType));
 	}
-
+	
+	
+	/**
+	 * return the price per minute of voice calls in cent for the type of subscription
+	 * 
+	 * @since 1.0
+	 * */
 	@Override
 	public int getPricePerMinute(String subscriptionType) {
 		return Integer.parseInt(pricePerMinute.getProperty(subscriptionType));
 	}
-
+	
+	
+	/**
+	 * return the base price in cent for subscriptionType
+	 * 
+	 * @since 1.0
+	 * */
 	@Override
 	public int getBasePrice(String subscriptionType) {
 		return Integer.parseInt(basePrice.getProperty(subscriptionType));
