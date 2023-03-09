@@ -1,3 +1,13 @@
+/**
+ * Provides an Implementation of the SessionManager Interface.
+ * 
+ * Supports custom Configuration and/or DataStore classes.
+ * 
+ * @author ALARA
+ * 
+ * @since 1.0
+ */
+
 package ApiModule;
 
 import Configuration.Configuration;
@@ -10,35 +20,118 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Random;
 
-public class ApiModule implements SessionManager {
 
+/**
+ * the ApiModule class
+ * This is the default implementation of the SessionManager Interface.
+ * After loading, all user data lives here.
+ * 
+ * @author ALARA
+ * 
+ * @since 1.0
+ *
+ */
+public class ApiModule implements SessionManager {
+	
+	/*
+	 * Attributes
+	 * 
+	 */
+	
     private Configuration config;
     private DataStore dataStore;
     private List<UserData> users;
+    
+    
+    /*
+     * Constructors
+     * 
+     * */
 
+    /**
+     * Main Constructor
+     * 
+     * used by other constructors
+     * 
+     * @param config: Configuration to be used
+     * @param dataStore: DataStore-Object to be used
+     * 
+     * @since 1.0
+     */
     public ApiModule(Configuration config, DataStore dataStore){
         this.config = config;
         this.dataStore = dataStore;
         this.users = dataStore.loadUsers();
     }
     
+    /**
+     * Default Constructor
+     * 
+     * uses ConfigurationImp as default Configuration
+     * uses JsonDataStore as default DataStore
+     * 
+     * @since 1.0
+     */
     public ApiModule() {
     	this(new ConfigurationImp(), new JsonDataStore());
     }
     
+    
+    /**
+     * 
+     * Optional Constructor
+     * 
+     * uses JsonDataStore as default DataStore
+     * 
+     * @param config: Configuration to be used 
+     * 
+     * @since 1.0
+     */
     public ApiModule(Configuration config){
     	this(config, new JsonDataStore());
     }
     
+    /**
+     * 
+     * Optional Constructor
+     * 
+     * uses ConfigurationImp as default Configuration
+     * 
+     * @param dataStore: DataStore to be used 
+     * 
+     * @since 1.0
+     */
     public ApiModule(DataStore dataStore){
     	this(new ConfigurationImp(), dataStore);
     }
-
+    
+    
+    /*
+     * Interface methods
+     * 
+     * */
+    
+    /**
+	 * Get list of all users.
+	 * 
+	 * @return List of UserData of all subscribers.
+	 * 
+	 * @since 1.0
+	 */
     @Override
     public List<UserData>getUserList() {
         return this.users;
     }
 
+    /**
+	 * add a new user
+	 * 
+	 * @param data of user to be added.
+	 * 
+	 * @throws UserAlreadyExistsException if a User with the same IMSI already exists.
+	 * 
+	 * @since 1.0
+	 */
     @Override
     public void addUser(UserData newUser) throws UserAlreadyExistsException {
         //check if user is duplicate
@@ -48,10 +141,19 @@ public class ApiModule implements SessionManager {
                 throw new UserAlreadyExistsException();
             }
         }
-
+        
         this.users.add(newUser);
     }
     
+    /**
+	 * remove a user
+	 * 
+	 * @param userIndex: Index of subscriber to be removed.
+	 * 
+	 * @throws UserIndexOutOfBoundsException if an invalid userIndex is entered.
+	 * 
+	 * @since 1.0
+	 */
     @Override
     public void removeUser(int userIndex) throws UserIndexOutOfBoundsException {
     	if (!this.isValidUserIndex(userIndex)) {
@@ -61,6 +163,21 @@ public class ApiModule implements SessionManager {
     	this.users.remove(userIndex);
     }
     
+    /**
+	 * updates subscriber data based on session data:
+	 * - voice minutes used, taking free minutes into account
+	 * - data used
+	 * 
+	 * @param userIndex: index of subscriber who has the session
+	 * @param serviceType: name of the service to be used
+	 * @param time: time spent using the service in minutes
+	 * 
+	 * @throws UserIndexOutOfBoundsException if an invalid userIndex is entered.
+	 * @throws NotEnoughDataVolumeException if there is not enough data volume left for the subscriber
+	 * IMPORTANT: This depends on latency and therefore may happen inconsistently!
+	 * 
+	 * @since 1.0
+	 */
     @Override
     public void newSession(int userIndex, String serviceType, int time) throws UserIndexOutOfBoundsException, NotEnoughDataVolumeException {
     	
@@ -78,10 +195,66 @@ public class ApiModule implements SessionManager {
                 user.setVoiceMinutes(voiceMinutes+time);
                 break;
         }
-        //TODO: maybe return some infor for display?
+        //TODO: maybe return some info for display?
     }
 
-    private void dataSession(int userIndex, String serviceId, int time) {
+    /**
+     * Send invoices to all subscribers:
+     * - collect invoice information for all subscribers
+     * - reset free minutes for all subscribers
+     * - reset data used for all subscribes
+     * - return invoice information
+     * 
+     * @return list of invoice information for all subscribers
+     * Each entry contains all relevant invoice information for one subscriber
+     * 
+     * @since 1.0
+     */
+    @Override
+    public List<InvoiceInformation> invoice() {
+        List<InvoiceInformation> invoices = new ArrayList<>();
+        for (UserData user : this.users) {
+            invoices.add(this.getInvoiceInfo(user));
+            
+            //reset user data
+            user.setVoiceMinutes(0);
+            user.setDataUsed(0);
+        }
+        return invoices;
+    }
+
+    /**
+     * save the current data
+     * - First creates a backup of the existing data.
+     * - Then updates the subscriber data.
+     * 
+     * This should always be called before exiting.
+     * 
+     * @since 1.0
+     */
+    @Override
+    public void saveData() {
+    	this.dataStore.saveUsers(this.users);
+    }
+    
+    /*
+     * Private methods
+     * 
+     * */
+    
+    /**
+     * update user data for data service session
+     * 
+     * @param userIndex: 
+     * @param serviceId
+     * @param time
+     * 
+     * @throws NotEnoughDataVolumeException if there is not enough data volume left for the subscriber
+	 * IMPORTANT: This depends on latency and therefore may happen inconsistently!
+	 *
+	 * @since 1.0
+     */
+    private void dataSession(int userIndex, String serviceId, int time) throws NotEnoughDataVolumeException {
         UserData user = this.users.get(userIndex);
         String subscriptionType = user.getSubscriptionType();
         int dataVolume = this.config.getSubscriptionDataVolume(subscriptionType);
@@ -98,6 +271,21 @@ public class ApiModule implements SessionManager {
         }
     }
     
+    /**
+     * calculate available data rate for a user
+     * 
+     * 1. find out which terminal the user is using
+     * 2. find out which type of RAN the terminal supports
+     * 3. get maximum data rate for the RAN
+     * 4. get signal strength factor
+     * 5. available data rate equals maximum data rate multiplied by signal strength factor
+     * 
+     * @param user: user for which to calculate available data rate
+     * 
+     * @return available data rate for the user
+     * 
+     * @since 1.0
+     */
     private double getAvailableDataRate(UserData user) {
         String terminalType = user.getTerminalType();
         String ran = this.config.getRan(terminalType);
@@ -106,6 +294,21 @@ public class ApiModule implements SessionManager {
         return subscriptionRate*signalStrength;
     }
 
+    /**
+     * get the signal strength factor for a session
+     * 
+     * there are 4 types of signal strength:
+     * - N/A (0%)
+     * - bad (10%)
+     * - medium (25%)
+     * - good (50%)
+     * 
+     * One is selected at random (equal distribution) and returned.
+     * 
+     * @return signal strength factor
+     * 
+     * @since 1.0
+     */
     private double getSignalStrength(){
         int random = new Random().nextInt(3);
         switch(random){
@@ -119,20 +322,16 @@ public class ApiModule implements SessionManager {
                 return 0.5;
         }
     }
-
-    @Override
-    public List<InvoiceInformation> invoice() {
-        List<InvoiceInformation> invoices = new ArrayList<>();
-        for (UserData user : this.users) {
-            invoices.add(this.getInvoiceInfo(user));
-            
-            //reset user data
-            user.setVoiceMinutes(0);
-            user.setDataUsed(0);
-        }
-        return invoices;
-    }
-
+    
+    /**
+     * creates the invoice information for a subscriber
+     * 
+     * @param user: subscriber information on which the invoice information is based
+     * 
+     * @return object containing all relevant invoice information
+     * 
+     * @since 1.0
+     */
     private InvoiceInformation getInvoiceInfo(UserData user) {
     	String subscriptionType = user.getSubscriptionType();
     	
@@ -148,6 +347,19 @@ public class ApiModule implements SessionManager {
         return invoice;
     }
     
+    /**
+     * calculate voice charge for a user
+     * 
+     * 1. get free minutes included in users subscription
+     * 2. get voice minutes used since last invoice
+     * 3. if voice minutes are less than or equal to free minutes, return 0, if not, continue
+     * 4. charged minutes are equal to voice minutes - free minutes
+     * 5. return charged minutes multiplied by the price per minute for users subscription
+     * 
+     * @param user: user for whom to calculate voice charge
+     * 
+     * @return voice charge in Euro-cents
+     */
     private int getVoiceCharge(UserData user) {
     	String subscriptionType = user.getSubscriptionType();
     	int freeVoiceMinutes = config.getSubscriptionFreeMinutes(subscriptionType);
@@ -160,10 +372,17 @@ public class ApiModule implements SessionManager {
 		int pricePerMinute = config.getPricePerMinute(subscriptionType);
 		return pricePerMinute*voiceMinutes;	
     }
-
-    @Override
-    public void saveData() {
-    	this.dataStore.saveUsers(this.users);
+    
+    /**
+     * checks, if a given userIndex is valid
+     * 
+     * userIndex must be valid for the list of users
+     * 
+     * @param userIndex: index to be checked
+     * @return if index is valid
+     */
+    private boolean isValidUserIndex(int userIndex) {
+    	return (userIndex >= 0) && (userIndex < this.users.size());
     }
 }
 
