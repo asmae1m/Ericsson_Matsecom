@@ -13,4 +13,5 @@ public interface Configuration {
 	public double getMaxDataRate(String ran);
 	public List<String> getPossibleSubscriptionTypes();
 	public List<String> getPossibleTerminalTypes();
+	public List<String> getPossibleServices();
 }

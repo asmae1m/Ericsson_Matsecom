@@ -117,6 +117,15 @@ public class ConfigurationImp implements Configuration {
 		return terminalTypes;
 	}
 	
+	@Override
+	public List<String> getPossibleServices() {
+		List<String> services = new ArrayList<String>();
+		for (Object obj : Collections.list(requiredDataRate.keys())){
+			services.add(obj.toString());
+		}
+		return services;
+	}
+	
 	/*
 	 * create missing config files & helper funcitons for testing
 	 * 
