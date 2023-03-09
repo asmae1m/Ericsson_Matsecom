@@ -32,17 +32,17 @@ public class TesterClass {
     System.out.println("we've added the user: " + newUser);
     System.out.println("The user List is : " + api.getUserList());
     
-    api.removeUser(0);
+    api.removeUser(2);
     System.out.println("i've removed user: " + api.getUserList());
     
     
     api.addUser(newUser);
     System.out.println("User added: " + newUser);
-    api.newSession(0, "DATA", 10);
+    api.newSession(0, "Browsing and social networking", 10);
     System.out.println("Data session created for user: " + newUser);
     
     
-    api.newSession(0, "VOICE", 30);
+    api.newSession(0, "Voice call", 30);
     System.out.println("Voice session created for user: " + newUser);
     
     
