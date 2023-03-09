@@ -1,5 +1,7 @@
 package Configuration;
 
+import java.util.List;
+
 public interface Configuration {
 	public SessionType getSessionType(String serviceType);
 	public double getRequiredDataRate(String serviceType);
@@ -9,4 +11,6 @@ public interface Configuration {
 	public int getSubscriptionDataVolume(String subscriptionType);
 	public String getRan(String terminaltype);
 	public double getMaxDataRate(String ran);
+	public List<String> getPossibleSubscriptionTypes();
+	public List<String> getPossibleTerminalTypes();
 }

@@ -18,8 +18,17 @@ public class ConfigurationImp implements Configuration {
 	private Properties ran;
 	private Properties maxDataRate;
 	
-	public ConfigurationImp() throws IOException {
-		loadConfig();		
+	public ConfigurationImp() {
+		try {
+			loadConfig();
+		} catch(IOException e) {
+			try {
+				init();
+				loadConfig();
+			} catch(IOException f) {
+				// oops!
+			}
+		}
 	}
 
 	@Override
