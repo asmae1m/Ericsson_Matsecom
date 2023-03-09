@@ -90,4 +90,15 @@ public interface SessionManager {
      */
     void saveData();
     
+    /**
+     * adds a data volume upgrade to the subscribers account
+     * 
+     * @param userIndex: index of subscriber who gets the data volume upgrade
+     * 
+     * @throws UserIndexOutOfBoundsException when called with an invalid user index
+     * 
+     * @since 1.1
+     */
+    void upgradeDataVolume(int userIndex) throws UserIndexOutOfBoundsException;
+    
 }
