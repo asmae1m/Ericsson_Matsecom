@@ -13,6 +13,8 @@ public interface Configuration {
 	public double getMaxDataRate(String ran);
 	
 	/****/
-	public String getProperty(String key);
-	public void saveProperty(String key , String value, String cmt) throws FileNotFoundException;
+	//public String getProperty(String key);
+	public void saveProperty(String key , String value, String cmt,String file) throws FileNotFoundException;
+	public void init();
+	public String getProperty(String key, String file);
 }
