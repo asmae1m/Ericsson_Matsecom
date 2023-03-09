@@ -17,6 +17,7 @@ import DataStore.UserData;
 import DataStore.JsonDataStore;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 import java.lang.Math;
 import java.util.Random;
 
@@ -58,7 +59,7 @@ public class ApiModule implements SessionManager {
      * 
      * @since 1.0
      */
-    public ApiModule(Configuration config, DataStore dataStore){
+    public ApiModule(Configuration config, DataStore dataStore) throws IOException {
         this.config = config;
         this.dataStore = dataStore;
         this.users = dataStore.loadUsers();
@@ -72,7 +73,7 @@ public class ApiModule implements SessionManager {
      * 
      * @since 1.0
      */
-    public ApiModule() {
+    public ApiModule() throws IOException {
     	this(new ConfigurationImp(), new JsonDataStore());
     }
     
@@ -87,7 +88,7 @@ public class ApiModule implements SessionManager {
      * 
      * @since 1.0
      */
-    public ApiModule(Configuration config){
+    public ApiModule(Configuration config) throws IOException {
     	this(config, new JsonDataStore());
     }
     
@@ -101,7 +102,7 @@ public class ApiModule implements SessionManager {
      * 
      * @since 1.0
      */
-    public ApiModule(DataStore dataStore){
+    public ApiModule(DataStore dataStore) throws IOException {
     	this(new ConfigurationImp(), dataStore);
     }
     
