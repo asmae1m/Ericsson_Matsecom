@@ -8,37 +8,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class JsonDataStore implements DataStore {
 
-	private ArrayList<UserData> UserList = new ArrayList<>();
-
 	public JsonDataStore() throws IOException {
-		loadUser();
+		loadUsers();
 	}
 
 	@Override
-	public void saveUserData(UserData userData) {
-		boolean exists = false;
+	public void saveUsers(List<UserData> users) {
 		try {
-			// Add the new UserData object to the existing userList
-			for (int i = 0; i < UserList.size(); i++) {
-				UserData elem = UserList.get(i);
-				if (elem.getImsi().equals(userData.getImsi())) {
-					UserList.set(i, userData);
-					exists = true;
-					break;
-				}
-			}
-			if (!exists) {
-				UserList.add(userData);
-			}
 
 			// Create a new instance of ObjectMapper
 			ObjectMapper objectMapper = new ObjectMapper();
 
 			// Write the updated userList to the JSON file
-			objectMapper.writeValue(new File("userdata.json"), UserList);
+			objectMapper.writeValue(new File("userdata.json"), users);
 
 		} catch (IOException e) {
 			System.err.println("Error saving user data to JSON file: " + e.getMessage());
@@ -46,7 +32,8 @@ public class JsonDataStore implements DataStore {
 	}
 
 	@Override
-	public void loadUser() {
+	public ArrayList<UserData> loadUsers() {
+		ArrayList<UserData> Result = new ArrayList<UserData>();
 		try {
 			// Create a new instance of ObjectMapper
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -60,11 +47,13 @@ public class JsonDataStore implements DataStore {
 			ArrayList<UserData> loadedUserData = objectMapper.readValue(jsonString, typeRef);
 
 			// Add the loaded UserData objects to the existing userList
-			UserList.addAll(loadedUserData);
+			Result.addAll(loadedUserData);
 
 		} catch (IOException e) {
 			System.err.println("Error loading user data from JSON file: " + e.getMessage());
 		}
+
+		return Result;
 	}
 
 }
