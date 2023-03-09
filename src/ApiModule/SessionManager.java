@@ -56,26 +56,27 @@ public interface SessionManager {
 	 * @param time: time spent using the service in minutes
 	 * 
 	 * @throws NotEnoughDataVolumeException if there is not enough data volume left for the subscriber
+	 * IMPORTANT: This depends on latency and therefore may happen inconsistently!
 	 * 
 	 * @since 1.0
 	 */
     void newSession(int userIndex, String serviceType, int time) throws NotEnoughDataVolumeException;
     
     /**
-     * Send invoices to all subscribers:
-     * - collect invoice information for all subscribers
-     * - reset free minutes for all subscribers
-     * - reset data used for all subscribes
-     * - return invoice information
-     * 
-     * @return list of invoice information for all subscribers
-     * Each entry contains all relevant invoice information for one subscriber
-     * 
-     * @throws NotEnoughDataVolumeException if requested data usage exceeds remaining data volume.
-     * IMPORTANT: This depends on latency and therefore may happen inconsistently!
-     * 
-     * @since 1.0
-     */
+	 * updates subscriber data based on session data:
+	 * - voice minutes used, taking free minutes into account
+	 * - data used
+	 * 
+	 * @param userIndex: index of subscriber who has the session
+	 * @param serviceType: name of the service to be used
+	 * @param time: time spent using the service in minutes
+	 * 
+	 * @throws UserIndexOutOfBoundsException if an invalid userIndex is entered.
+	 * @throws NotEnoughDataVolumeException if there is not enough data volume left for the subscriber
+	 * IMPORTANT: This depends on latency and therefore may happen inconsistently!
+	 * 
+	 * @since 1.0
+	 */
     List<InvoiceInformation> invoice();
     
     /**
