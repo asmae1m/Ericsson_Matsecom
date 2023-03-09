@@ -101,4 +101,20 @@ public interface SessionManager {
      */
     void upgradeDataVolume(int userIndex) throws UserIndexOutOfBoundsException;
     
+    /**
+     * updates the data of a subscriber after performing an invoice call for the user
+     * 
+     * @param userIndex: index of subscriber whose data is changed
+     * @param forename: new value for first name
+     * @param surname: new value for last name
+     * @param subscriptionType: new subscription type
+     * @param terminalType: new terminal type
+     * 
+     * @return information for displaying the invoice
+     * 
+     * @throws UserIndexOutOfBoundsException
+     * 
+     * @since 1.1
+     */
+    InvoiceInformation updateUserData(int userIndex, String forename, String surname, String subscriptionType, String terminalType) throws UserIndexOutOfBoundsException;
 }

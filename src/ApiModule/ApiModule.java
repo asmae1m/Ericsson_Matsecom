@@ -202,8 +202,7 @@ public class ApiModule implements SessionManager {
     /**
      * Send invoices to all subscribers:
      * - collect invoice information for all subscribers
-     * - reset free minutes for all subscribers
-     * - reset data used for all subscribes
+     * - reset usage and charge information for all subscribers
      * - return invoice information
      * 
      * @return list of invoice information for all subscribers
@@ -215,12 +214,7 @@ public class ApiModule implements SessionManager {
     public List<InvoiceInformation> invoice() {
         List<InvoiceInformation> invoices = new ArrayList<>();
         for (UserData user : this.users) {
-            invoices.add(this.getInvoiceInfo(user));
-            
-            //reset user data
-            user.setVoiceMinutes(0);
-            user.setDataUsed(0.0);
-            user.setDataVolumeUpgrades(0);
+            invoices.add(this.userInvoice(user));
         }
         return invoices;
     }
@@ -258,6 +252,38 @@ public class ApiModule implements SessionManager {
     	UserData user = users.get(userIndex);
     	int dataVolumeUpgrades = user.getDataVolumeUpgrades();
     	user.setDataVolumeUpgrades(dataVolumeUpgrades + 1);
+    }
+    
+    /**
+     * updates the data of a subscriber after performing an invoice call for the user
+     * 
+     * @param userIndex: index of subscriber whose data is changed
+     * @param forename: new value for first name
+     * @param surname: new value for last name
+     * @param subscriptionType: new subscription type
+     * @param terminalType: new terminal type
+     * 
+     * @return information for displaying the invoice
+     * 
+     * @throws UserIndexOutOfBoundsException
+     * 
+     * @since 1.1
+     */
+    public InvoiceInformation updateUserData(int userIndex, String forename, String surname, String subscriptionType, String terminalType) throws UserIndexOutOfBoundsException {
+    	
+    	if (!this.isValidUserIndex(userIndex)) {
+    		throw new UserIndexOutOfBoundsException();
+    	}
+    	
+    	UserData user = users.get(userIndex);
+    	InvoiceInformation invoiceInformation = this.userInvoice(user);
+    	
+    	user.setForename(forename);
+    	user.setSurname(surname);
+    	user.setSubscriptionType(subscriptionType);
+    	user.setTerminalType(terminalType);
+    	
+    	return invoiceInformation;
     }
     
     /*
@@ -350,7 +376,11 @@ public class ApiModule implements SessionManager {
     }
     
     /**
-     * creates the invoice information for a subscriber
+     * does the invoice for a user and returns the information for display
+     * 
+     * 1. get invoice information
+     * 2. reset billing data
+     * 3. return invoice information
      * 
      * @param user: subscriber information on which the invoice information is based
      * 
@@ -358,7 +388,7 @@ public class ApiModule implements SessionManager {
      * 
      * @since 1.0
      */
-    private InvoiceInformation getInvoiceInfo(UserData user) {
+    private InvoiceInformation userInvoice(UserData user) {
     	String subscriptionType = user.getSubscriptionType();
     	
     	// get invoice data
@@ -371,9 +401,15 @@ public class ApiModule implements SessionManager {
         int dataVolumeUpgrades = user.getDataVolumeUpgrades();
         int dataCharge = 10*100*dataVolumeUpgrades;
         int totalCharge = basePrice + voiceCharge + dataCharge;
-        InvoiceInformation invoice = new InvoiceInformation(forename, surename, basePrice, voiceMinutes, voiceCharge, dataUsed, dataVolumeUpgrades, dataCharge, totalCharge);
+        
+        InvoiceInformation invoiceInformation = new InvoiceInformation(forename, surename, basePrice, voiceMinutes, voiceCharge, dataUsed, dataVolumeUpgrades, dataCharge, totalCharge);
 
-        return invoice;
+        //reset user data
+        user.setVoiceMinutes(0);
+        user.setDataUsed(0.0);
+        user.setDataVolumeUpgrades(0);
+        
+        return invoiceInformation;
     }
     
     /**
