@@ -15,18 +15,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonDataStore implements DataStore {
+	
+	private String fileName;
 
     /**
-     * Creates a new JsonDataStore instance and loads the list of users from the JSON file.
+     * Creates a new JsonDataStore instance and loads the list of users from the specified JSON file.
+     *
+     * @throws IOException if there is an error reading the JSON file
+     */
+    public JsonDataStore(String fileName) throws IOException {
+    	this.fileName = fileName;
+        loadUsers();
+    }
+    
+    /**
+     * Creates a new JsonDataStore instance and loads the list of users from the default JSON file.
      *
      * @throws IOException if there is an error reading the JSON file
      */
     public JsonDataStore() throws IOException {
+    	this.fileName = "userdata.json";
         loadUsers();
     }
 
     /**
-     * Saves the specified list of UserData objects to a JSON file.
+     * Saves the specified list of UserData objects to the default JSON file.
      *
      * @param users the list of UserData objects to be saved to the JSON file
      */
@@ -57,7 +70,7 @@ public class JsonDataStore implements DataStore {
             ObjectMapper objectMapper = new ObjectMapper();
 
             // Read the contents of the JSON file into a string
-            String jsonString = new String(Files.readAllBytes(Paths.get("userdata.json")));
+            String jsonString = new String(Files.readAllBytes(Paths.get(fileName)));
 
             // Convert the JSON string to a list of UserData objects
             TypeReference<ArrayList<UserData>> typeRef = new TypeReference<ArrayList<UserData>>() {};
