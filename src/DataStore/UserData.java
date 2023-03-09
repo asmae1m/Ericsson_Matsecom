@@ -8,6 +8,7 @@ public class UserData {
 	private int voiceMinutes;
 	private String terminalType;
 	private String subscriptionType;
+	private int dataVolumeUpgrades;
 
 	public UserData() {
 		super();
@@ -21,6 +22,7 @@ public class UserData {
 		this.subscriptionType = subscriptionType;
 		this.dataUsed = 0.0;
 		this.voiceMinutes = 0;
+		this.dataVolumeUpgrades = 0;
 	}
 
 	// Setter methods
@@ -48,33 +50,41 @@ public class UserData {
 		this.subscriptionType = subscriptionType;
 	}
 
+	public void setDataVolumeUpgrades(int dataVolumeUpgrades) {
+		this.dataVolumeUpgrades = dataVolumeUpgrades;
+	}
+
 	// Getter methods
 	public double getDataUsed() {
-		return dataUsed;
+		return this.dataUsed;
 	}
 
 	public int getVoiceMinutes() {
-		return voiceMinutes;
+		return this.voiceMinutes;
 	}
 
 	public String getForename() {
-		return forename;
+		return this.forename;
 	}
 
 	public String getSurname() {
-		return surname;
+		return this.surname;
 	}
 
 	public String getImsi() {
-		return imsi;
+		return this.imsi;
 	}
 
 	public String getTerminalType() {
-		return terminalType;
+		return this.terminalType;
 	}
 
 	public String getSubscriptionType() {
-		return subscriptionType;
+		return this.subscriptionType;
+	}
+	
+	public int getDataVolumeUpgrades() {
+		return this.dataVolumeUpgrades;
 	}
 
 }
