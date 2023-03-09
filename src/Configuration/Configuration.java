@@ -1,5 +1,7 @@
 package Configuration;
 
+import java.io.FileNotFoundException;
+
 public interface Configuration {
 	public SessionType getSessionType(String serviceType);
 	public double getRequiredDataRate(String serviceType);
@@ -12,5 +14,5 @@ public interface Configuration {
 	
 	/****/
 	public String getProperty(String key);
-	public void saveProperty(String key , String value, String cmt);
+	public void saveProperty(String key , String value, String cmt) throws FileNotFoundException;
 }

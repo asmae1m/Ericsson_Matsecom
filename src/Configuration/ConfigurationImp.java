@@ -2,6 +2,7 @@ package Configuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,11 +13,8 @@ public class ConfigurationImp implements Configuration {
 	@Override
 	public SessionType getSessionType(String serviceType) {
 		// TODO Auto-generated method stub
-		if(serviceType.equals("Voice call")) {
-			return SessionType.VOICE;
-		}else if (serviceType.equals("Browsing and social networking") ||serviceType.equals("App download") || serviceType.equals("Adaptive HD video") ) 
-			{return SessionType.DATA;}
-		return null;
+		
+		return SessionType.valueOf(getProperty(serviceType));
 	}
 
 	@Override
@@ -133,16 +131,15 @@ public class ConfigurationImp implements Configuration {
 	}
 
 	@Override
-	public void saveProperty(String key, String value, String cmt) {
+	public void saveProperty(String key, String value, String cmt) throws FileNotFoundException {
 		// TODO Auto-generated method stub
-		File configFile = new File("config.properties");
+		FileOutputStream configFile = new FileOutputStream("config.properties",true);
 		 
 		try {
 		    Properties props = new Properties();
 		    props.setProperty(key, value);
-		    FileWriter writer = new FileWriter(configFile);
-		    props.store(writer, cmt);
-		    writer.close();
+		    props.store(configFile, cmt);
+		    configFile.close();
 		} catch (FileNotFoundException ex) {
 		    // file does not exist
 		} catch (IOException ex) {
