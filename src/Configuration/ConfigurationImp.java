@@ -6,6 +6,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class ConfigurationImp implements Configuration {
 	
@@ -96,6 +99,24 @@ public class ConfigurationImp implements Configuration {
 		return props;
 	}
 	
+	@Override
+	public List<String> getPossibleSubscriptionTypes() {
+		List<String> subscriptionTypes = new ArrayList<String>();
+		for (Object obj : Collections.list(basePrice.keys())){
+			subscriptionTypes.add(obj.toString());
+		}
+		return subscriptionTypes;
+	}
+	
+	@Override
+	public List<String> getPossibleTerminalTypes() {
+		List<String> terminalTypes = new ArrayList<String>();
+		for (Object obj : Collections.list(ran.keys())){
+			terminalTypes.add(obj.toString());
+		}
+		return terminalTypes;
+	}
+	
 	/*
 	 * create missing config files & helper funcitons for testing
 	 * 
@@ -168,7 +189,6 @@ public class ConfigurationImp implements Configuration {
 		/************/
 		saveProperty("3G",String.valueOf(20),null,"configmaxDataRate.properties");
 		saveProperty("4G",String.valueOf(300),null,"configmaxDataRate.properties");
-
 	}
 	
 	
