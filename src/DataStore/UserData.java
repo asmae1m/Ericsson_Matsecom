@@ -1,6 +1,23 @@
 package DataStore;
 
+/**
+ * The UserData class contains data for a single user, including their name,
+ * International Mobile Subscriber Identity (IMSI), data usage, voice minutes,
+ * terminal type, subscription type, and number of data volume upgrades.
+ * 
+ * @author ALARA
+ * 
+ * @since 1.0
+ *
+ */
+
 public class UserData {
+
+	/*
+	 * Attributes
+	 * 
+	 */
+
 	private String forename;
 	private String surname;
 	private String imsi;
@@ -10,9 +27,30 @@ public class UserData {
 	private String subscriptionType;
 	private int dataVolumeUpgrades;
 
+	/*
+	 * Constructors
+	 * 
+	 */
+
+	/**
+	 * Creates an instance of UserData with default values. Used by the
+	 * Objectmapper.
+	 */
+
 	public UserData() {
 		super();
 	}
+
+	/**
+	 * Creates an instance of UserData with the specified values.
+	 * 
+	 * @param forename         the user's first name
+	 * @param surname          the user's last name
+	 * @param imsi             the user's International Mobile Subscriber Identity
+	 *                         (IMSI)
+	 * @param terminalType     the type of terminal used by the user
+	 * @param subscriptionType the user's subscription type
+	 */
 
 	public UserData(String forename, String surname, String imsi, String terminalType, String subscriptionType) {
 		this.forename = forename;
@@ -82,7 +120,7 @@ public class UserData {
 	public String getSubscriptionType() {
 		return this.subscriptionType;
 	}
-	
+
 	public int getDataVolumeUpgrades() {
 		return this.dataVolumeUpgrades;
 	}
