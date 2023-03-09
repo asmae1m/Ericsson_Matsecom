@@ -129,7 +129,7 @@ public class ConfigurationImp implements Configuration {
 			con.saveProperty("GreenMobil M",String.valueOf(2200),null,"configbasePrice.properties");
 			con.saveProperty("GreenMobil L",String.valueOf(4200),null,"configbasePrice.properties");
 			/*************/
-			con.saveProperty("GreenMobil S",String.valueOf(0),"SubscriptionFreeMinutes","configsubFreeMinute.properties");
+			con.saveProperty("GreenMobil S",String.valueOf(0),"SubscriptionFreeMinutes","configFreeMinute.properties");
 			con.saveProperty("GreenMobil M",String.valueOf(100),null,"configFreeMinute.properties");
 			con.saveProperty("GreenMobil L",String.valueOf(150),null,"configFreeMinute.properties");
 			/*************/
