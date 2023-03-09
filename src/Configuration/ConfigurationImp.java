@@ -47,7 +47,7 @@ public class ConfigurationImp implements Configuration {
 	@Override
 	public int getSubscriptionFreeMinutes(String subscriptionType) {
 		// TODO Auto-generated method stub
-		return Integer.parseInt(getProperty(subscriptionType, "configsubFreeMinute.properties"));
+		return Integer.parseInt(getProperty(subscriptionType, "configFreeMinute.properties"));
 	}
 
 	@Override
