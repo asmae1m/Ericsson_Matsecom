@@ -117,12 +117,13 @@ public class ApiModule implements SessionManager {
     	String subscriptionType = user.getSubscriptionType();
     	
     	// get invoice data
-    	String name = user.getName(); // TODO: ask which name is displayed!
+    	String forename = user.getForename();
+    	String surename = user.getSurname();
     	double dataUsed = user.getDataUsed();
     	int voiceMinutes = user.getVoiceMinutes();
     	int voiceCharge = this.getVoiceCharge(user);
         int basePrice = this.config.getBasePrice(subscriptionType);
-        InvoiceInformation invoice = new InvoiceInformation(name, dataUsed, voiceMinutes, voiceCharge, basePrice);
+        InvoiceInformation invoice = new InvoiceInformation(forename, surename, dataUsed, voiceMinutes, voiceCharge, basePrice);
 
         return invoice;
     }
