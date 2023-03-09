@@ -4,76 +4,97 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigurationImp implements Configuration {
 	
-	public ConfigurationImp() throws FileNotFoundException {
-		init();
-	}
+	private Properties sessionType;
+	private Properties requiredDataRate;
+	private Properties pricePerMinute;
+	private Properties basePrice;
+	private Properties freeMinutes;
+	private Properties dataVolume;
+	private Properties ran;
+	private Properties maxDataRate;
 	
-	public ConfigurationImp(String string) {
-		// TODO Auto-generated constructor stub
+	public ConfigurationImp() throws IOException {
+		loadConfig();		
 	}
 
 	@Override
 	public SessionType getSessionType(String serviceType) {
-		// TODO Auto-generated method stub
-		//return null;
-		return SessionType.valueOf(getProperty(serviceType,"configservice.properties"));
+		String value = sessionType.getProperty(serviceType);
+		if (value.equals("VOICE")) {
+			return SessionType.VOICE;
+		} else {
+			return SessionType.DATA;
+		}
 	}
 
 	@Override
 	public double getRequiredDataRate(String serviceType) {
-		// TODO Auto-generated method stub
-		return Double.parseDouble(getProperty(serviceType, "configdatarate.properties"));
-
+		return Double.parseDouble(requiredDataRate.getProperty(serviceType));
 	}
 
 	@Override
 	public int getPricePerMinute(String subscriptionType) {
-		// TODO Auto-generated method stub
-		return Integer.parseInt(getProperty(subscriptionType, "configPricePerMinute.properties"));
+		return Integer.parseInt(pricePerMinute.getProperty(subscriptionType));
 	}
 
 	@Override
 	public int getBasePrice(String subscriptionType) {
-		// TODO Auto-generated method stub
-		return Integer.parseInt(getProperty(subscriptionType, "configbasePrice.properties"));
+		return Integer.parseInt(basePrice.getProperty(subscriptionType));
 	}
 
 	@Override
 	public int getSubscriptionFreeMinutes(String subscriptionType) {
-		// TODO Auto-generated method stub
-		return Integer.parseInt(getProperty(subscriptionType, "configFreeMinute.properties"));
+		return Integer.parseInt(freeMinutes.getProperty(subscriptionType));
 	}
 
 	@Override
 	public int getSubscriptionDataVolume(String subscriptionType) {
-		// TODO Auto-generated method stub
-		return Integer.parseInt(getProperty(subscriptionType, "configsubDataVolume.properties"));
-
+		return Integer.parseInt(dataVolume.getProperty(subscriptionType));
 	}
+	
 	@Override
 	public String getRan(String terminaltype) {
-		// TODO Auto-generated method stub
-		return getProperty(terminaltype, "configRan.properties");
-
+		return ran.getProperty(terminaltype);
 	}
 
 	@Override
 	public double getMaxDataRate(String ran) {
-		return Double.parseDouble(getProperty(ran, "configmaxDataRate.properties"));
-
+		return Double.parseDouble(maxDataRate.getProperty(ran));
 	}
-
-	@Override
-	public String getProperty(String key,String file) {
-		// TODO Auto-generated method stub
+	
+	private void loadConfig() throws IOException {
+		sessionType = loadProperties("configservice.properties");
+		requiredDataRate = loadProperties("configdatarate.properties");
+		pricePerMinute = loadProperties("configPricePerMinute.properties");
+		basePrice = loadProperties("configbasePrice.properties");
+		freeMinutes = loadProperties("configFreeMinute.properties");
+		dataVolume = loadProperties("configsubDataVolume.properties");
+		ran = loadProperties("configRan.properties");
+		maxDataRate = loadProperties("configmaxDataRate.properties");
+	}
+	
+	public Properties loadProperties(String file) throws IOException {
 		File configFile = new File(file);
-		 String host = null;
+		Properties props = new Properties();
+		FileReader reader = new FileReader(configFile);
+	    props.load(reader);
+	    reader.close();
+		return props;
+	}
+	
+	/*
+	 * create missing config files & helper funcitons for testing
+	 * 
+	 * */
+	
+	public static String getProperty(String key,String file) {
+		File configFile = new File(file);
+		String host = null;
 		try {
 		    FileReader reader = new FileReader(configFile);
 		    Properties props = new Properties();
@@ -90,9 +111,7 @@ public class ConfigurationImp implements Configuration {
 		return host;
 	}
 
-	@Override
-	public void saveProperty(String key, String value, String cmt,String file) throws FileNotFoundException {
-		// TODO Auto-generated method stub
+	public static void saveProperty(String key, String value, String cmt,String file) throws FileNotFoundException {
 		FileOutputStream configFile = new FileOutputStream(file,true);
 		 
 		try {
@@ -107,47 +126,40 @@ public class ConfigurationImp implements Configuration {
 		}
 	}
 
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		ConfigurationImp con = new ConfigurationImp("test");
-		try {
-			con.saveProperty("App download", SessionType.DATA.toString(), "Service type","configservice.properties");
-			con.saveProperty("Adaptive HD video", SessionType.DATA.toString(),null, "configservice.properties");
-			con.saveProperty("Voice call", SessionType.VOICE.toString(), null,"configservice.properties");
-			/************/
-			con.saveProperty("Voice call",String.valueOf(0.0),"RequiredData Rate","configdatarate.properties");
-			con.saveProperty("Browsing and social networking",String.valueOf(2.0),null,"configdatarate.properties");
-			con.saveProperty("App download",String.valueOf(10.0),null,"configdatarate.properties");
-			con.saveProperty("Adaptive HD video",String.valueOf(100.0),null,"configdatarate.properties");
-			/*************/
-			con.saveProperty("GreenMobil S  ",String.valueOf(8),"Price Per Minute (cent)","configPricePerMinute.properties");
-			con.saveProperty("GreenMobil M",String.valueOf(6),null,"configPricePerMinute.properties");
-			con.saveProperty("GreenMobil L",String.valueOf(4),null,"configPricePerMinute.properties");
-			/*************/
-			con.saveProperty("GreenMobil S",String.valueOf(800),"Base Price","configbasePrice.properties");
-			con.saveProperty("GreenMobil M",String.valueOf(2200),null,"configbasePrice.properties");
-			con.saveProperty("GreenMobil L",String.valueOf(4200),null,"configbasePrice.properties");
-			/*************/
-			con.saveProperty("GreenMobil S",String.valueOf(0),"SubscriptionFreeMinutes","configFreeMinute.properties");
-			con.saveProperty("GreenMobil M",String.valueOf(100),null,"configFreeMinute.properties");
-			con.saveProperty("GreenMobil L",String.valueOf(150),null,"configFreeMinute.properties");
-			/*************/
-			con.saveProperty("GreenMobil S",String.valueOf(500),"Subscribtion data volume","configsubDataVolume.properties");
-			con.saveProperty("GreenMobil M",String.valueOf(2048),null,"configsubDataVolume.properties");
-			con.saveProperty("GreenMobil L",String.valueOf(5120),null,"configsubDataVolume.properties");
-			/*************/
-			con.saveProperty("PhairPhone","3G","getRan","configRan.properties");
-			con.saveProperty("Pear aphone 4s","3G",null,"configRan.properties");
-			con.saveProperty("Samsung S42plus","4G",null,"configRan.properties");
-			/************/
-			con.saveProperty("3G",String.valueOf(20),null,"configmaxDataRate.properties");
-			con.saveProperty("4G",String.valueOf(300),null,"configmaxDataRate.properties");
+	@SuppressWarnings("static-access")
+	public static void init() throws IOException {
+		saveProperty("App download", SessionType.DATA.toString(), "Service type","configservice.properties");
+		saveProperty("Adaptive HD video", SessionType.DATA.toString(),null, "configservice.properties");
+		saveProperty("Voice call", SessionType.VOICE.toString(), null,"configservice.properties");
+		/************/
+		saveProperty("Voice call",String.valueOf(0.0),"RequiredData Rate","configdatarate.properties");
+		saveProperty("Browsing and social networking",String.valueOf(2.0),null,"configdatarate.properties");
+		saveProperty("App download",String.valueOf(10.0),null,"configdatarate.properties");
+		saveProperty("Adaptive HD video",String.valueOf(100.0),null,"configdatarate.properties");
+		/*************/
+		saveProperty("GreenMobil S  ",String.valueOf(8),"Price Per Minute (cent)","configPricePerMinute.properties");
+		saveProperty("GreenMobil M",String.valueOf(6),null,"configPricePerMinute.properties");
+		saveProperty("GreenMobil L",String.valueOf(4),null,"configPricePerMinute.properties");
+		/*************/
+		saveProperty("GreenMobil S",String.valueOf(800),"Base Price","configbasePrice.properties");
+		saveProperty("GreenMobil M",String.valueOf(2200),null,"configbasePrice.properties");
+		saveProperty("GreenMobil L",String.valueOf(4200),null,"configbasePrice.properties");
+		/*************/
+		saveProperty("GreenMobil S",String.valueOf(0),"SubscriptionFreeMinutes","configFreeMinute.properties");
+		saveProperty("GreenMobil M",String.valueOf(100),null,"configFreeMinute.properties");
+		saveProperty("GreenMobil L",String.valueOf(150),null,"configFreeMinute.properties");
+		/*************/
+		saveProperty("GreenMobil S",String.valueOf(500),"Subscribtion data volume","configsubDataVolume.properties");
+		saveProperty("GreenMobil M",String.valueOf(2048),null,"configsubDataVolume.properties");
+		saveProperty("GreenMobil L",String.valueOf(5120),null,"configsubDataVolume.properties");
+		/*************/
+		saveProperty("PhairPhone","3G","getRan","configRan.properties");
+		saveProperty("Pear aphone 4s","3G",null,"configRan.properties");
+		saveProperty("Samsung S42plus","4G",null,"configRan.properties");
+		/************/
+		saveProperty("3G",String.valueOf(20),null,"configmaxDataRate.properties");
+		saveProperty("4G",String.valueOf(300),null,"configmaxDataRate.properties");
 
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	
