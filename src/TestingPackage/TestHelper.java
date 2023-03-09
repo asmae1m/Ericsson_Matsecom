@@ -1,5 +1,6 @@
 package TestingPackage;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import Configuration.*;
 import DataStore.*;
@@ -10,7 +11,7 @@ public class TestHelper {
 		return new UserData("testForename", "testSurname", "123456789012345", "testTerminalType", "testSubscriptionType");
 	}
 	
-	public static Configuration getDefaultTestConfiguration() {
+	public static Configuration getDefaultTestConfiguration() throws FileNotFoundException {
 		return new ConfigurationImp();
 	}
 	

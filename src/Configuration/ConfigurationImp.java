@@ -65,7 +65,7 @@ public class ConfigurationImp implements Configuration {
 
 	@Override
 	public double getMaxDataRate(String ran) {
-		return Double.parseDouble(getProperty(ran, "configRan.properties"));
+		return Double.parseDouble(getProperty(ran, "configmaxDataRate.properties"));
 
 	}
 
