@@ -242,7 +242,7 @@ public class ConfigurationImp implements Configuration {
 		saveProperty("App download",String.valueOf(10.0),null,"configdatarate.properties");
 		saveProperty("Adaptive HD video",String.valueOf(100.0),null,"configdatarate.properties");
 		/*************/
-		saveProperty("GreenMobil S  ",String.valueOf(8),"Price Per Minute (cent)","configPricePerMinute.properties");
+		saveProperty("GreenMobil S",String.valueOf(8),"Price Per Minute (cent)","configPricePerMinute.properties");
 		saveProperty("GreenMobil M",String.valueOf(6),null,"configPricePerMinute.properties");
 		saveProperty("GreenMobil L",String.valueOf(4),null,"configPricePerMinute.properties");
 		/*************/

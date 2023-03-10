@@ -188,7 +188,8 @@ public class ApiModule implements SessionManager {
     	
         switch (this.config.getSessionType(serviceType)) {
 	        case DATA:
-	            this.dataSession(userIndex, serviceType, time);
+	           
+	        	this.dataSession(userIndex, serviceType, time);
 	            break;
             case VOICE:
             	UserData user = this.users.get(userIndex);
