@@ -198,7 +198,7 @@ public class SessionSimulator {
         String subscriptionType = selectTypeFromList(config.getPossibleSubscriptionTypes(), "Select new subscription (enter the number on the left):", null);
         String terminalType = selectTypeFromList(config.getPossibleTerminalTypes(), "Select new terminal (enter the number on the left):", null);
 
-        UserData newUser = new UserData(forname,surname, imsi, subscriptionType, terminalType);
+        UserData newUser = new UserData(forname,surname, imsi, terminalType, subscriptionType);
         try {
             api.addUser(newUser);
             System.out.println("User added successfully.");
