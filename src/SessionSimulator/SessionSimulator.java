@@ -104,7 +104,7 @@ public class SessionSimulator {
 	private int selectUser() {
 		while(true) {
 			System.out.println();
-			System.out.println("Please select a user (enter the number on the left)");
+			System.out.println("Please select a user (enter the number on the left):");
 			showUserList(true);
 			try {
 		        int option = scanner.nextInt();scanner.nextLine();
@@ -171,8 +171,8 @@ public class SessionSimulator {
         System.out.print("IMSI: ");
         String imsi = scanner.nextLine();
         
-        String subscriptionType = selectTypeFromList(config.getPossibleSubscriptionTypes(), "Select new subscription:", null);
-        String terminalType = selectTypeFromList(config.getPossibleTerminalTypes(), "Select new terminal:", null);
+        String subscriptionType = selectTypeFromList(config.getPossibleSubscriptionTypes(), "Select new subscription (enter the number on the left):", null);
+        String terminalType = selectTypeFromList(config.getPossibleTerminalTypes(), "Select new terminal (enter the number on the left):", null);
 
         UserData newUser = new UserData(forname,surname, imsi, subscriptionType, terminalType);
         try {
@@ -196,9 +196,11 @@ public class SessionSimulator {
 
     private void newSession() {
     	int userIndex = selectUser();
-        System.out.println("Enter session information:");
-        String serviceType = selectTypeFromList(config.getPossibleServices(), "Select service:", null);
-        System.out.print("Time: ");
+    	System.out.println();
+        System.out.println("New Session");
+        String serviceType = selectTypeFromList(config.getPossibleServices(), "Select service (enter the number on the left):", null);
+        System.out.println();
+        System.out.print("Time in minutes: ");
         int time = scanner.nextInt();scanner.nextLine();
 
         try {
@@ -206,9 +208,31 @@ public class SessionSimulator {
             System.out.println("Session created successfully.");
         } catch (NotEnoughDataVolumeException e) {
             
-        	//TODO
+        	if (offerDataUpgrade()) {
+        		api.newSession(userIndex, serviceType, time);
+        		System.out.println("Session created successfully.");
+        	} else {
+        		System.out.println("Session was canceled.");
+        	}
            
         }
+    }
+    
+    private boolean offerDataUpgrade() {
+    	System.out.println();
+    	System.out.println("It appears that you do not have enough data volume left.");
+    	System.out.println("You can upgrade you data volume by 1 GB RIGHT NOW for ONLY 10€!");
+    	System.out.println();
+    	System.out.println("Would you like to upgrade your data volume? (y/n)");
+    	
+    	while(true) {
+    		String input = scanner.nextLine();
+    		if ("y".equals(input.toLowerCase())) {
+    			return true;
+    		} else if ("n".equals(input.toLowerCase())) {
+    			return false;
+    		}
+    	}
     }
     
     private void invoice() {
