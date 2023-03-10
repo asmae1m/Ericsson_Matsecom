@@ -271,7 +271,7 @@ public class SessionSimulator {
         System.out.println();
         System.out.print("Time in minutes: ");
         int time = getIntegerInput();
-        while (time < 0 || time >= 1440) {
+        while (0 > time || time > 1440) {
         	System.out.println("Sessions are limited to 24 hours (1440 minutes). Please enter a valid Time:");
         	time = getIntegerInput();
         }
@@ -286,7 +286,7 @@ public class SessionSimulator {
             	if (offerDataUpgrade()) {
             		api.upgradeDataVolume(userIndex);
             	} else {
-            		System.out.println("Session was canceled.")
+            		System.out.println("Session was canceled.");
             		keepTrying = false;
             	}
             }
