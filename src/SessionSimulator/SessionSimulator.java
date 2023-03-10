@@ -26,7 +26,9 @@ public class SessionSimulator {
 		boolean exit = false;
 		while(!exit) {
 			// Prompt user for which method to test
-	        System.out.println("Welcome, what do you need?");
+			System.out.println();
+	        System.out.println("What do you want to do?");
+	        System.out.println();
 	        System.out.println("1. User List");
 	        System.out.println("2. Edit User");
 	        System.out.println("3. add User");
@@ -39,6 +41,7 @@ public class SessionSimulator {
 
 	        switch(input) {
 	            case "1":
+	            	System.out.println();
 	                showUserList(false);
 	                break;
 	            case "2":
@@ -73,6 +76,7 @@ public class SessionSimulator {
 	
     public static void main(String[] args) throws IOException {
         SessionSimulator sim = new SessionSimulator();
+        displayStartupMessage();
         sim.mainLoop(); 
     }
 
@@ -86,7 +90,6 @@ public class SessionSimulator {
     
     
 	private void showUserList(boolean showIndex) {
-        System.out.println("User List:");
         List<UserData> users = api.getUserList();
         for (int i=0; i<users.size(); i++) {
         	if (showIndex) {
@@ -100,9 +103,11 @@ public class SessionSimulator {
 	
 	private int selectUser() {
 		while(true) {
+			System.out.println();
+			System.out.println("Please select a user (enter the number on the left)");
 			showUserList(true);
 			try {
-		        int option = scanner.nextInt();
+		        int option = scanner.nextInt();scanner.nextLine();
 		        api.getUserList().get(option);
 		        return option;
 			} catch(RuntimeException e) {
@@ -157,6 +162,7 @@ public class SessionSimulator {
     }
     
     private void addUser() {
+    	System.out.println();
         System.out.println("Enter user information:");
         System.out.print("Forname: ");
         String forname = scanner.nextLine();
@@ -193,7 +199,7 @@ public class SessionSimulator {
         System.out.println("Enter session information:");
         String serviceType = selectTypeFromList(config.getPossibleServices(), "Select service:", null);
         System.out.print("Time: ");
-        int time = scanner.nextInt();
+        int time = scanner.nextInt();scanner.nextLine();
 
         try {
             api.newSession(userIndex, serviceType, time);
@@ -211,6 +217,12 @@ public class SessionSimulator {
     	for (InvoiceInformation invoice : invoices) {
     		System.out.println(getInvoiceDisplay(invoice));
     	}
+    }
+    
+    private static void displayStartupMessage() {
+    	System.out.println("MATSECOM Session Management Simulator v1.1");
+    	System.out.println("powered by ALRA");
+    	System.out.println();
     }
     
 }
