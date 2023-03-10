@@ -42,8 +42,7 @@ public class SessionSimulator {
 	        switch(input) {
 	            case "1":
 	            	System.out.println();
-	            	System.out.println("List of Users:");
-	            	System.out.println();
+	            	printListHeader(false);
 	                showUserList(false);
 	                break;
 	            case "2":
@@ -82,8 +81,48 @@ public class SessionSimulator {
         sim.mainLoop(); 
     }
 
+    private String addPadding(String str, int len, boolean alignLeft) {
+    	if (alignLeft) {
+    		while (str.length()<len) {
+        		str += " ";
+        	}
+    	} else {
+    		while (str.length()<len) {
+        		str = " " + str;
+        	}
+    	}
+    	
+    	return str;
+    }
+    
+    private void printListHeader(boolean hasIndex) {
+    	String line = "";
+    	if (hasIndex) {
+    		line = "#    ";
+    	}
+    	line += "Forename            ";
+    	line += "Surname             ";
+    	line += "Subscription Type   ";
+    	line += "Terminal Type       ";
+    	line += "Voice use      ";
+    	line += "Date use       ";
+    	line += "Upgrades purchased";
+    	
+    	System.out.println(line);
+    }
+    
     private String getUserDisplay(UserData user) {
-    	return user.getForename() + " " + user.getSurname(); //TODO!!!
+    	String line = addPadding(user.getForename(), 20, true);
+    	line += addPadding(user.getSurname(), 20, true);
+    	line += addPadding(user.getSubscriptionType(), 20, true);
+    	line += addPadding(user.getTerminalType(), 20, true);
+    	line += addPadding(String.valueOf(user.getVoiceMinutes()+ "m "), 15, false);
+    	line += addPadding(String.valueOf(user.getDataUsed()+ " MB "), 15, false);
+    	line += addPadding(String.valueOf(user.getDataVolumeUpgrades()), 5, false);
+    	
+    	return line;
+    	
+    	
     }
     
     private void displayInvoice(InvoiceInformation invoice) {
@@ -106,7 +145,7 @@ public class SessionSimulator {
         List<UserData> users = api.getUserList();
         for (int i=0; i<users.size(); i++) {
         	if (showIndex) {
-        		System.out.println(Integer.toString(i) + ": " + getUserDisplay(users.get(i)));
+        		System.out.println(addPadding(Integer.toString(i) + ": ", 5, true) + getUserDisplay(users.get(i)));
         	} else {
         		System.out.println(getUserDisplay(users.get(i)));
         	}
@@ -128,8 +167,10 @@ public class SessionSimulator {
 	private int selectUser() {
 		while(true) {
 			System.out.println();
-			System.out.println("Please select a user (enter the number on the left):");
+			printListHeader(true);
 			showUserList(true);
+			System.out.println();
+			System.out.println("Please select a user (enter the number on the left):");
 			try {
 		        int option = getIntegerInput();
 		        api.getUserList().get(option);
@@ -194,6 +235,10 @@ public class SessionSimulator {
         String surname = scanner.nextLine();
         System.out.print("IMSI: ");
         String imsi = scanner.nextLine();
+        while (!imsi.matches("^\\d{15}$")) {
+        	System.out.println("Invalid IMSI, please enter a 15-digit number");
+        	imsi=scanner.nextLine();
+        }
         
         String subscriptionType = selectTypeFromList(config.getPossibleSubscriptionTypes(), "Select new subscription (enter the number on the left):", null);
         String terminalType = selectTypeFromList(config.getPossibleTerminalTypes(), "Select new terminal (enter the number on the left):", null);
@@ -226,6 +271,10 @@ public class SessionSimulator {
         System.out.println();
         System.out.print("Time in minutes: ");
         int time = getIntegerInput();
+        while (time < 0 || time >= 1440) {
+        	System.out.println("Sessions are limited to 24 hours (1440 minutes). Please enter a valid Time:");
+        	time = getIntegerInput();
+        }
 
         try {
             api.newSession(userIndex, serviceType, time);
