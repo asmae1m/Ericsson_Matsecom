@@ -27,7 +27,7 @@ public class SessionSimulator {
 		while(!exit) {
 			// Prompt user for which method to test
 			System.out.println();
-	        System.out.println("What do you want to do?");
+	        System.out.println("Select action (enter the number on the left):");
 	        System.out.println();
 	        System.out.println("1. User List");
 	        System.out.println("2. Edit User");
@@ -41,6 +41,8 @@ public class SessionSimulator {
 
 	        switch(input) {
 	            case "1":
+	            	System.out.println();
+	            	System.out.println("List of Users:");
 	            	System.out.println();
 	                showUserList(false);
 	                break;
@@ -84,8 +86,19 @@ public class SessionSimulator {
     	return user.getForename() + " " + user.getSurname(); //TODO!!!
     }
     
-    private String getInvoiceDisplay(InvoiceInformation invoice) {
-    	return invoice.forename + " " + invoice.surname; //TODO!!!!
+    private void displayInvoice(InvoiceInformation invoice) {
+    	
+
+        System.out.println("");
+        System.out.println("Customer: " + invoice.forename + " " + invoice.surname);
+        System.out.println("Your base Price is: " + invoice.basePrice / 100. + "€.");
+        System.out.println("You used " + invoice.dataVolume + " mb.");
+        System.out.println("Your calls lasted " + invoice.voiceMinutes + " minutes.");
+
+        if (invoice.dataVolumeUpgrades > 0)
+            System.out.println("You used " + invoice.dataVolumeUpgrades + ".");
+        System.out.println("Your total charge is " + invoice.totalCharge / 100. + "€.");
+    	
     }
     
     
@@ -169,7 +182,7 @@ public class SessionSimulator {
         System.out.println("User edited successfully:");
         System.out.println(getUserDisplay(user));
         System.out.println("New Invoice:");
-        System.out.println(getInvoiceDisplay(invoice));
+        displayInvoice(invoice);
     }
     
     private void addUser() {
@@ -251,7 +264,7 @@ public class SessionSimulator {
     	System.out.println("Invoices:");
     	for (InvoiceInformation invoice : invoices) {
     		System.out.println();
-    		System.out.println(getInvoiceDisplay(invoice));
+    		displayInvoice(invoice);
     	}
     }
     
