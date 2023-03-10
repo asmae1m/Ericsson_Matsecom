@@ -72,6 +72,7 @@ public class SessionSimulator {
 		scanner.close();
 
 	}
+<<<<<<< HEAD
 
 	public static void main(String[] args) throws IOException {
 		SessionSimulator sim = new SessionSimulator();
@@ -108,17 +109,38 @@ public class SessionSimulator {
 		}
 	}
 
+=======
+	
+	private int getIntegerInput() {
+		while(true) {
+			String input = scanner.nextLine();
+			try {
+				return Integer.parseInt(input);
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter a valid number");
+			}
+		}
+	}
+	
+>>>>>>> branch 'main' of https://git.fh-aachen.de/aa5295s/alaraa
 	private int selectUser() {
 		while (true) {
 			System.out.println();
-			System.out.println("Please select a user (enter the number on the left)");
+			System.out.println("Please select a user (enter the number on the left):");
 			showUserList(true);
 			try {
+<<<<<<< HEAD
 				int option = scanner.nextInt();
 				scanner.nextLine();
 				api.getUserList().get(option);
 				return option;
 			} catch (RuntimeException e) {
+=======
+		        int option = getIntegerInput();
+		        api.getUserList().get(option);
+		        return option;
+			} catch(RuntimeException e) {
+>>>>>>> branch 'main' of https://git.fh-aachen.de/aa5295s/alaraa
 				System.out.println("Invalid input, try again!");
 			}
 		}
@@ -205,8 +227,30 @@ public class SessionSimulator {
 		}
 	}
 
+<<<<<<< HEAD
 	private void removeUser() {
 		int userIndex = selectUser();
+=======
+        InvoiceInformation invoice = api.updateUserData(userIndex, forename, surname, subscriptionType, terminalType);
+        System.out.println("User edited successfully:");
+        System.out.println(getUserDisplay(user));
+        System.out.println("New Invoice:");
+        System.out.println(getInvoiceDisplay(invoice));
+    }
+    
+    private void addUser() {
+    	System.out.println();
+        System.out.println("Enter user information:");
+        System.out.print("Forname: ");
+        String forname = scanner.nextLine();
+        System.out.print("Surname: ");
+        String surname = scanner.nextLine();
+        System.out.print("IMSI: ");
+        String imsi = scanner.nextLine();
+        
+        String subscriptionType = selectTypeFromList(config.getPossibleSubscriptionTypes(), "Select new subscription (enter the number on the left):", null);
+        String terminalType = selectTypeFromList(config.getPossibleTerminalTypes(), "Select new terminal (enter the number on the left):", null);
+>>>>>>> branch 'main' of https://git.fh-aachen.de/aa5295s/alaraa
 
 		try {
 			api.removeUser(userIndex);
@@ -229,8 +273,20 @@ public class SessionSimulator {
 			System.out.println("Session created successfully.");
 		} catch (NotEnoughDataVolumeException e) {
 
+<<<<<<< HEAD
 			// TODO
+=======
+    private void newSession() {
+    	int userIndex = selectUser();
+    	System.out.println();
+        System.out.println("New Session");
+        String serviceType = selectTypeFromList(config.getPossibleServices(), "Select service (enter the number on the left):", null);
+        System.out.println();
+        System.out.print("Time in minutes: ");
+        int time = getIntegerInput();
+>>>>>>> branch 'main' of https://git.fh-aachen.de/aa5295s/alaraa
 
+<<<<<<< HEAD
 		}
 	}
 
@@ -248,4 +304,53 @@ public class SessionSimulator {
 		System.out.println();
 	}
 
+=======
+        try {
+            api.newSession(userIndex, serviceType, time);
+            System.out.println("Session created successfully.");
+        } catch (NotEnoughDataVolumeException e) {
+            
+        	if (offerDataUpgrade()) {
+        		api.newSession(userIndex, serviceType, time);
+        		System.out.println("Session created successfully.");
+        	} else {
+        		System.out.println("Session was canceled.");
+        	}
+           
+        }
+    }
+    
+    private boolean offerDataUpgrade() {
+    	System.out.println();
+    	System.out.println("It appears that you do not have enough data volume left.");
+    	System.out.println("You can upgrade you data volume by 1 GB RIGHT NOW for ONLY 10€!");
+    	System.out.println();
+    	System.out.println("Would you like to upgrade your data volume? (y/n)");
+    	
+    	while(true) {
+    		String input = scanner.nextLine();
+    		if ("y".equals(input.toLowerCase())) {
+    			return true;
+    		} else if ("n".equals(input.toLowerCase())) {
+    			return false;
+    		}
+    	}
+    }
+    
+    private void invoice() {
+    	List<InvoiceInformation> invoices = api.invoice();
+    	System.out.println("Invoices:");
+    	for (InvoiceInformation invoice : invoices) {
+    		System.out.println();
+    		System.out.println(getInvoiceDisplay(invoice));
+    	}
+    }
+    
+    private static void displayStartupMessage() {
+    	System.out.println("MATSECOM Session Management Simulator v1.1");
+    	System.out.println("powered by ALRA");
+    	System.out.println();
+    }
+    
+>>>>>>> branch 'main' of https://git.fh-aachen.de/aa5295s/alaraa
 }

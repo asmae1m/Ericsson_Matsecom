@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
@@ -210,19 +211,38 @@ public class ConfigurationImp implements Configuration {
 		    // I/O error
 		}
 	}
+	
+	public static void emptyConfig(String filename) {
 
+        File configFile = new File(filename);
+
+        try {
+            RandomAccessFile raf = new RandomAccessFile(configFile, "rw");
+            raf.setLength(0);
+            raf.close();
+        } catch (IOException e) {
+        }
+    }
+	
+	
 	@SuppressWarnings("static-access")
 	public static void init() throws IOException {
+		String[] fileNames = {"configservice.properties","configdatarate.properties","configPricePerMinute.properties","configbasePrice.properties","configFreeMinute.properties","configsubDataVolume.properties","configRan.properties","configmaxDataRate.properties"};
+		for (String string : fileNames) {
+			emptyConfig(string);
+		}
+		/**************/
 		saveProperty("App download", SessionType.DATA.toString(), "Service type","configservice.properties");
 		saveProperty("Adaptive HD video", SessionType.DATA.toString(),null, "configservice.properties");
 		saveProperty("Voice call", SessionType.VOICE.toString(), null,"configservice.properties");
+		saveProperty("Browsing and social networking", SessionType.DATA.toString(), null, "configservice.properties");
 		/************/
 		saveProperty("Voice call",String.valueOf(0.0),"RequiredData Rate","configdatarate.properties");
 		saveProperty("Browsing and social networking",String.valueOf(2.0),null,"configdatarate.properties");
 		saveProperty("App download",String.valueOf(10.0),null,"configdatarate.properties");
 		saveProperty("Adaptive HD video",String.valueOf(100.0),null,"configdatarate.properties");
 		/*************/
-		saveProperty("GreenMobil S  ",String.valueOf(8),"Price Per Minute (cent)","configPricePerMinute.properties");
+		saveProperty("GreenMobil S",String.valueOf(8),"Price Per Minute (cent)","configPricePerMinute.properties");
 		saveProperty("GreenMobil M",String.valueOf(6),null,"configPricePerMinute.properties");
 		saveProperty("GreenMobil L",String.valueOf(4),null,"configPricePerMinute.properties");
 		/*************/
