@@ -101,13 +101,24 @@ public class SessionSimulator {
         }
 	}
 	
+	private int getIntegerInput() {
+		while(true) {
+			String input = scanner.nextLine();
+			try {
+				return Integer.parseInt(input);
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter a valid number");
+			}
+		}
+	}
+	
 	private int selectUser() {
 		while(true) {
 			System.out.println();
 			System.out.println("Please select a user (enter the number on the left):");
 			showUserList(true);
 			try {
-		        int option = scanner.nextInt();scanner.nextLine();
+		        int option = getIntegerInput();
 		        api.getUserList().get(option);
 		        return option;
 			} catch(RuntimeException e) {
@@ -201,7 +212,7 @@ public class SessionSimulator {
         String serviceType = selectTypeFromList(config.getPossibleServices(), "Select service (enter the number on the left):", null);
         System.out.println();
         System.out.print("Time in minutes: ");
-        int time = scanner.nextInt();scanner.nextLine();
+        int time = getIntegerInput();
 
         try {
             api.newSession(userIndex, serviceType, time);
@@ -239,6 +250,7 @@ public class SessionSimulator {
     	List<InvoiceInformation> invoices = api.invoice();
     	System.out.println("Invoices:");
     	for (InvoiceInformation invoice : invoices) {
+    		System.out.println();
     		System.out.println(getInvoiceDisplay(invoice));
     	}
     }
