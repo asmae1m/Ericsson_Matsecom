@@ -275,19 +275,21 @@ public class SessionSimulator {
         	System.out.println("Sessions are limited to 24 hours (1440 minutes). Please enter a valid Time:");
         	time = getIntegerInput();
         }
-
-        try {
-            api.newSession(userIndex, serviceType, time);
-            System.out.println("Session created successfully.");
-        } catch (NotEnoughDataVolumeException e) {
-            
-        	if (offerDataUpgrade()) {
-        		api.newSession(userIndex, serviceType, time);
-        		System.out.println("Session created successfully.");
-        	} else {
-        		System.out.println("Session was canceled.");
-        	}
-           
+        
+        boolean keepTrying = true;
+        while (keepTrying) {
+        	try {
+                api.newSession(userIndex, serviceType, time);
+                System.out.println("Session created successfully.");
+                keepTrying = false;
+            } catch (NotEnoughDataVolumeException e) {
+            	if (offerDataUpgrade()) {
+            		api.upgradeDataVolume(userIndex);
+            	} else {
+            		System.out.println("Session was canceled.")
+            		keepTrying = false;
+            	}
+            }
         }
     }
     
