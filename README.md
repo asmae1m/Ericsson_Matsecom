@@ -14,7 +14,7 @@ The participating companies are expected to submit information documents that ad
 ## High Level Requirements
 Our solution is able to provide the following features:
 
-    **1. Subscriber Management**: The software manages subscribers, including the types of mobile terminals used and the class of subscriptions.
+    **1 Subscriber Management**: The software manages subscribers, including the types of mobile terminals used and the class of subscriptions.
 
     **2. Charging System**: For voice calls and mobile data sessions, the system determines the quantity of data or voice charges and add them to the user account. Data sessions may be rejected when a subscriber has used up all data volume in their tariff.
 
